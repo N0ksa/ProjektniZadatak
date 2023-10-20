@@ -6,15 +6,14 @@ public class Professor {
     private Adress adress;
     private String professorId;
     private String email;
-    private ClubMembership membership;
+    private ClubMembership clubMembership;
 
-    public Professor(String name, String surname, Adress adress, String professorId, String email, ClubMembership membership) {
+    public Professor(String name, String surname, Adress adress, String professorId, String email) {
         this.name = name;
         this.surname = surname;
         this.adress = adress;
         this.professorId = professorId;
         this.email = email;
-        this.membership = membership;
     }
 
     public String getName() {
@@ -57,11 +56,11 @@ public class Professor {
         this.email = email;
     }
 
-    public ClubMembership getMembership() {
-        return membership;
+    public ClubMembership getClubMembership() {
+        return clubMembership;
     }
 
-    public void setMembership(ClubMembership membership) {
-        this.membership = membership;
+    public void setClubMembership(ClubMembership clubMembership) {
+        this.clubMembership = clubMembership;
     }
 }

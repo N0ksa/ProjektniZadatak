@@ -31,6 +31,16 @@ public class Main {
             students.add(enterStudent(input));
         }
 
+        for (int i = 0; i < MAX_NUMBER_OF_PROFFESSORS; i++){
+            System.out.printf("Molimo unesite %d. profesora:\n", i + 1);
+            professors.add(enterProfessor(input));
+        }
+
+        for (int i = 0; i < MAX_NUMBER_OF_STUDENT_CLUBS; i++){
+            System.out.printf("Molimo unesite %d. matematički klub:\n", i + 1);
+            studentClubs.add(enterStudentClub(input, students, professors));
+        }
+
 
 
     }
@@ -77,6 +87,102 @@ public class Main {
 
         return newStudent;
     }
+
+    private static Professor enterProfessor(Scanner input){
+        System.out.print("Unesi ime profesora: ");
+        String professorName = input.nextLine();
+
+        System.out.print("Unesi prezime profesora: ");
+        String professorSurname = input.nextLine();
+
+        System.out.println("Unesi adresu profesora: ");
+        Adress professorAdress = enterAdress(input);
+
+        System.out.print("Unesi JMBAG profesora: ");
+        String professorId = input.nextLine();
+
+        System.out.print("Unesi email studenta: ");
+        String professorEmail = input.nextLine();
+
+        Professor newProfessor = new Professor(professorName, professorSurname, professorAdress, professorId, professorEmail);
+
+        System.out.println("Da li je profesor član matematičkog kluba?");
+        System.out.println("1-Da\n2-Ne");
+        Integer choice = input.nextInt();
+        input.nextLine();
+
+        if (choice == 1){
+            System.out.println("Upišite datum učlanjivanja (dd.MM.yyyy.): ");
+            String dateString = input.nextLine();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.");
+            LocalDate  joinDate = LocalDate.parse(dateString, formatter);;
+
+            System.out.println("Upišite broj članske iskaznice: ");
+            String membershipId = input.nextLine();
+
+            ClubMembership clubMembership = new ClubMembership(joinDate, membershipId);
+            newProfessor.setClubMembership(clubMembership);
+        }
+
+        return newProfessor;
+    }
+
+
+    private static StudentClub enterStudentClub(Scanner input, List<Student> students, List<Professor> professors){
+        System.out.print("Upišite ime kluba: ");
+        String clubName = input.nextLine();
+
+        System.out.print("Upišite opis kluba: ");
+        String clubDescription = input.nextLine();
+
+        System.out.println("Odaberite studente članove kluba:");
+        for (int i = 0; i < students.size(); i++){
+            System.out.printf("%d. %s %s\n", i + 1, students.get(i).getName(), students.get(i).getSurname());
+        }
+
+        List<Student> selectedStudents = new ArrayList<>();
+
+        while(true){
+            System.out.print("Odaberite redni broj studenta (ili unesite 0 za završetak): ");
+            Integer  studentIndex = input.nextInt() - 1;
+
+            if (studentIndex == -1){
+                break;
+            }
+            if (studentIndex >= 0 && studentIndex < students.size()){
+                selectedStudents.add(students.get(studentIndex));
+            }
+            else{
+                System.out.println("Unijeli ste krivi broj. Pokušajte ponovno!");
+            }
+        }
+
+        List<Professor> selectedProfessors = new ArrayList<>();
+        System.out.println("Odaberite profesore članove kluba:");
+        for (int i = 0; i < professors.size(); i++){
+            System.out.printf("%d. %s %s\n", i + 1, professors.get(i).getName(), professors.get(i).getSurname());
+        }
+
+        while(true){
+            System.out.print("Odaberite redni broj profesora (ili unesite 0 za završetak): ");
+            Integer  professorIndex = input.nextInt() - 1;
+
+            if (professorIndex == -1){
+                break;
+            }
+            if (professorIndex >= 0 && professorIndex < professors.size()){
+                selectedProfessors.add(professors.get(professorIndex));
+            }
+            else{
+                System.out.println("Unijeli ste krivi broj. Pokušajte ponovno!");
+            }
+        }
+
+        return new StudentClub(clubName, clubDescription, selectedStudents, selectedProfessors);
+
+    }
+
+
 
     private static Adress enterAdress(Scanner input) {
         System.out.println("\tInformacije o adresi:");
