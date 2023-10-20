@@ -1,23 +1,23 @@
 package hr.java.project.entities;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class ClubMembership {
-    private Date joinDate;
+    private LocalDate joinDate;
     boolean isActiveMember;
     private String membershipID;
 
-    public ClubMembership(Date joinDate, boolean isActiveMember, String membershipID) {
+    public ClubMembership(LocalDate joinDate, String membershipId) {
         this.joinDate = joinDate;
-        this.isActiveMember = isActiveMember;
-        this.membershipID = membershipID;
+        this.isActiveMember = true;
+        this.membershipID = membershipId;
     }
 
-    public Date getJoinDate() {
+    public LocalDate getJoinDate() {
         return joinDate;
     }
 
-    public void setJoinDate(Date joinDate) {
+    public void setJoinDate(LocalDate joinDate) {
         this.joinDate = joinDate;
     }
 
@@ -36,4 +36,5 @@ public class ClubMembership {
     public void setMembershipID(String membershipID) {
         this.membershipID = membershipID;
     }
+
 }

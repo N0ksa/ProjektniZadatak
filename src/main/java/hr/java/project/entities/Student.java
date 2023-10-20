@@ -9,15 +9,13 @@ public class Student {
     private Integer yearOfStudy;
     private ClubMembership clubMembership;
 
-    public Student(String name, String surname, Adress adress, String studentId, String email, Integer yearOfStudy,
-                   ClubMembership clubMembership) {
+    public Student(String name, String surname, Adress adress, String studentId, String email, Integer yearOfStudy) {
         this.name = name;
         this.surname = surname;
         this.adress = adress;
         this.studentId = studentId;
         this.email = email;
         this.yearOfStudy = yearOfStudy;
-        this.clubMembership = clubMembership;
     }
 
     public String getName() {

@@ -1,17 +1,52 @@
 package hr.java.project.entities;
 
+import java.util.Objects;
+
 public class Adress {
     private String street;
     private String houseNumber;
     private String city;
     private String postalCode;
 
-    public Adress(String street, String houseNumber, String city, String postalCode) {
+    private Adress(String street, String houseNumber, String city, String postalCode) {
         this.street = street;
         this.houseNumber = houseNumber;
         this.city = city;
         this.postalCode = postalCode;
     }
+
+    public static class AdressBuilder{
+        private String street;
+        private String houseNumber;
+        private String city;
+        private String postalCode;
+
+        public AdressBuilder(String street){
+            this.street = street;
+        }
+
+        public AdressBuilder setHouseNumber(String houseNumber) {
+            this.houseNumber = houseNumber;
+            return this;
+        }
+
+        public AdressBuilder setCity(String city) {
+            this.city = city;
+            return this;
+        }
+
+        public AdressBuilder setPostalCode(String postalCode) {
+            this.postalCode = postalCode;
+            return this;
+        }
+
+        public Adress build(){
+            return new Adress(street, houseNumber, city, postalCode);
+        }
+
+
+    }
+
     public String getStreet() {
         return street;
     }
@@ -44,5 +79,24 @@ public class Adress {
         this.postalCode = postalCode;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Adress adress = (Adress) o;
+        return Objects.equals(street.toLowerCase(), adress.street.toLowerCase())
+                && Objects.equals(houseNumber.toLowerCase(), adress.houseNumber.toLowerCase())
+                && Objects.equals(city.toLowerCase(), adress.city.toLowerCase())
+                && Objects.equals(postalCode.toLowerCase(), adress.postalCode.toLowerCase());
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(street, houseNumber, city, postalCode);
+    }
+
+    @Override
+    public String toString() {
+        return getStreet() + " " + getHouseNumber() + ", " + getCity() + " " + getPostalCode();
+    }
 }
