@@ -22,27 +22,27 @@ public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
 
-        List<Student> students = getStudentsFromUser(input);
-        List<Professor> professors = getProfessorsFromUser(input);
-        List<MathClub> mathClubs = getMathClubsFromUser(input, students);
-        List <MathProject> mathProjects = getMathProjectsFromUser(input, mathClubs);
+        List<Student> students = collectStudentsFromUser(input);
+        List<Professor> professors = collectProfessorsFromUser(input);
+        List<MathClub> mathClubs = collectMathClubsFromUser(input, students);
+        List <MathProject> mathProjects = collectMathProjectsFromUser(input, mathClubs);
 
-
-
+        printStudentWithLongestMembership(students);
 
 
     }
 
-    private static List<Student> getStudentsFromUser(Scanner input) {
+
+    private static List<Student> collectStudentsFromUser(Scanner input) {
         List<Student> students = new ArrayList<>();
         for (int i = 0; i < MAX_NUMBER_OF_STUDENTS; i++) {
             System.out.printf("Molimo unesite %d. studenta:\n", i + 1);
-            students.add(enterStudent(input));
+            students.add(createStudent(input));
         }
         return students;
     }
 
-    private static Student enterStudent(Scanner input) {
+    private static Student createStudent (Scanner input) {
         System.out.print("Unesi ime studenta: ");
         String studentName = input.nextLine();
 
@@ -70,7 +70,7 @@ public class Main {
 
             if (choice == 1) {
 
-                ClubMembership clubMembership = enterClubMembership(input);
+                ClubMembership clubMembership = createClubMembership(input);
                 newStudent.setClubMembership(clubMembership);
 
             }
@@ -82,7 +82,7 @@ public class Main {
         return newStudent;
     }
 
-    private static ClubMembership enterClubMembership(Scanner input) {
+    private static ClubMembership createClubMembership(Scanner input) {
         System.out.println("Upišite datum učlanjivanja (dd.MM.yyyy.): ");
         String dateString = input.nextLine();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.");
@@ -94,16 +94,16 @@ public class Main {
         return new ClubMembership(joinDate, membershipId);
     }
 
-    private static List<Professor> getProfessorsFromUser(Scanner input) {
+    private static List<Professor> collectProfessorsFromUser (Scanner input) {
         List<Professor> professors = new ArrayList<>();
         for (int i = 0; i < MAX_NUMBER_OF_PROFESSORS; i++) {
             System.out.printf("Molimo unesite %d. profesora:\n", i + 1);
-            professors.add(enterProfessor(input));
+            professors.add(createProfessor(input));
         }
         return professors;
     }
 
-    private static Professor enterProfessor(Scanner input){
+    private static Professor createProfessor(Scanner input){
         System.out.print("Unesi ime profesora: ");
         String professorName = input.nextLine();
 
@@ -121,16 +121,16 @@ public class Main {
     }
 
 
-    private static List<MathClub> getMathClubsFromUser(Scanner input, List<Student> students) {
+    private static List<MathClub> collectMathClubsFromUser(Scanner input, List<Student> students) {
         List<MathClub> mathClubs = new ArrayList<>();
         for (int i = 0; i < MAX_NUMBER_OF_MATH_CLUBS; i++) {
             System.out.printf("Molimo unesite %d. matematički klub:\n", i + 1);
-            mathClubs.add(enterMathClub(input, students));
+            mathClubs.add(createMathClub(input, students));
         }
         return mathClubs;
     }
 
-    private static MathClub enterMathClub(Scanner input, List<Student> students){
+    private static MathClub createMathClub(Scanner input, List<Student> students){
         System.out.print("Upišite ime kluba: ");
         String clubName = input.nextLine();
 
@@ -185,17 +185,17 @@ public class Main {
         return unselectedStudents;
     }
 
-    private static List<MathProject> getMathProjectsFromUser(Scanner input, List<MathClub> mathClubs) {
+    private static List<MathProject> collectMathProjectsFromUser(Scanner input, List<MathClub> mathClubs) {
         List<MathProject> mathProjects = new ArrayList<>();
-        for (int i = 0; i < MAX_NUMBER_OF_MATH_CLUBS; i++) {
+        for (int i = 0; i < MAX_NUMBER_OF_MATH_PROJECTS; i++) {
             System.out.printf("Molimo unesite %d. projekt\n", i + 1);
-            mathProjects.add(enterProject(input, mathClubs));
+            mathProjects.add(createProject(input, mathClubs));
         }
         return mathProjects;
     }
 
 
-    private static MathProject enterProject(Scanner input, List<MathClub> mathClubs) {
+    private static MathProject createProject(Scanner input, List<MathClub> mathClubs) {
         System.out.print("Unesite ime projekta: ");
         String projectName = input.nextLine();
 
@@ -255,6 +255,39 @@ public class Main {
         return unselectedClubs;
     }
 
+
+    private static void printStudentWithLongestMembership(List<Student> students) {
+        Student studentWithLongestMembership = findStudentWithLongestMembership(students);
+        if (studentWithLongestMembership != null) {
+            System.out.println("Student koji ima najduže članstvo u studentskom klubu je:");
+            System.out.printf("%s %s %s"
+                    ,studentWithLongestMembership.getName()
+                    ,studentWithLongestMembership.getSurname()
+                    ,studentWithLongestMembership.getStudentId());
+        } else {
+            System.out.println("Ne postoji registriran student koji je član studentskog kluba.");
+        }
+    }
+
+    private static Student findStudentWithLongestMembership(List<Student> students) {
+        LocalDate longestJoinDate = null;
+        Student studentWithLongestMembership = null;
+
+        for (Student student : students) {
+            ClubMembership clubMembership = student.getClubMembership();
+
+            if (clubMembership != null) {
+                LocalDate joinDate = clubMembership.getJoinDate();
+
+                if (longestJoinDate == null || joinDate.isAfter(longestJoinDate)) {
+                    longestJoinDate = joinDate;
+                    studentWithLongestMembership = student;
+                }
+            }
+        }
+
+        return studentWithLongestMembership;
+    }
 
     private static Adress enterAdress(Scanner input) {
         System.out.println("\tInformacije o adresi:");
