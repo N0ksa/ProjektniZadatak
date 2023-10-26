@@ -42,7 +42,7 @@ public class Main {
         return students;
     }
 
-    private static Student enterStudent(Scanner input){
+    private static Student enterStudent(Scanner input) {
         System.out.print("Unesi ime studenta: ");
         String studentName = input.nextLine();
 
@@ -56,30 +56,42 @@ public class Main {
         String studentEmail = input.nextLine();
 
         System.out.print("Unesi godinu studija studenta: ");
-        Integer yearOfStudy = input.nextInt();
+        int yearOfStudy = input.nextInt();
         input.nextLine();
 
         Student newStudent = new Student(studentName, studentSurname, studentID, studentEmail, yearOfStudy);
 
-        System.out.println("Da li je student član matematičkog kluba?");
-        System.out.println("1-Da\n2-Ne");
-        Integer choice = input.nextInt();
-        input.nextLine();
+        int choice;
+        do {
+            System.out.println("Da li je student član matematičkog kluba?");
+            System.out.println("1-Da\n2-Ne");
+            choice = input.nextInt();
+            input.nextLine();
 
-        if (choice == 1){
-            System.out.println("Upišite datum učlanjivanja (dd.MM.yyyy.): ");
-            String dateString = input.nextLine();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.");
-            LocalDate  joinDate = LocalDate.parse(dateString, formatter);;
+            if (choice == 1) {
 
-            System.out.println("Upišite broj članske iskaznice: ");
-            String membershipId = input.nextLine();
+                ClubMembership clubMembership = enterClubMembership(input);
+                newStudent.setClubMembership(clubMembership);
 
-            ClubMembership clubMembership = new ClubMembership(joinDate, membershipId);
-            newStudent.setClubMembership(clubMembership);
-        }
+            }
+            else if (choice != 2) {
+                System.out.println("Molimo unesite 1 za 'Da' ili 2 za 'Ne'.");
+            }
+        } while (choice != 1 && choice != 2);
 
         return newStudent;
+    }
+
+    private static ClubMembership enterClubMembership(Scanner input) {
+        System.out.println("Upišite datum učlanjivanja (dd.MM.yyyy.): ");
+        String dateString = input.nextLine();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.");
+        LocalDate joinDate = LocalDate.parse(dateString, formatter);
+
+        System.out.println("Upišite broj članske iskaznice: ");
+        String membershipId = input.nextLine();
+
+        return new ClubMembership(joinDate, membershipId);
     }
 
     private static List<Professor> getProfessorsFromUser(Scanner input) {
