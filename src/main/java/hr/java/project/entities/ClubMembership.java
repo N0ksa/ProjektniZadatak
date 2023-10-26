@@ -3,8 +3,8 @@ package hr.java.project.entities;
 import java.time.LocalDate;
 
 public class ClubMembership {
-    private LocalDate joinDate;
     boolean isActiveMember;
+    private LocalDate joinDate;
     private String membershipID;
 
     public ClubMembership(LocalDate joinDate, String membershipId) {

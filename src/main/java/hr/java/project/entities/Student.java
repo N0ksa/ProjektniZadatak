@@ -3,16 +3,14 @@ package hr.java.project.entities;
 public class Student {
     private String name;
     private String surname;
-    private Adress adress;
     private String studentId;
     private String email;
     private Integer yearOfStudy;
     private ClubMembership clubMembership;
 
-    public Student(String name, String surname, Adress adress, String studentId, String email, Integer yearOfStudy) {
+    public Student(String name, String surname, String studentId, String email, Integer yearOfStudy) {
         this.name = name;
         this.surname = surname;
-        this.adress = adress;
         this.studentId = studentId;
         this.email = email;
         this.yearOfStudy = yearOfStudy;
@@ -32,14 +30,6 @@ public class Student {
 
     public void setSurname(String surname) {
         this.surname = surname;
-    }
-
-    public Adress getAdress() {
-        return adress;
-    }
-
-    public void setAdress(Adress adress) {
-        this.adress = adress;
     }
 
     public String getStudentId() {

@@ -3,15 +3,12 @@ package hr.java.project.entities;
 public class Professor {
     private String name;
     private String surname;
-    private Adress adress;
     private String professorId;
     private String email;
-    private ClubMembership clubMembership;
 
-    public Professor(String name, String surname, Adress adress, String professorId, String email) {
+    public Professor(String name, String surname, String professorId, String email) {
         this.name = name;
         this.surname = surname;
-        this.adress = adress;
         this.professorId = professorId;
         this.email = email;
     }
@@ -32,14 +29,6 @@ public class Professor {
         this.surname = surname;
     }
 
-    public Adress getAdress() {
-        return adress;
-    }
-
-    public void setAdress(Adress adress) {
-        this.adress = adress;
-    }
-
     public String getProfessorId() {
         return professorId;
     }
@@ -54,13 +43,5 @@ public class Professor {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public ClubMembership getClubMembership() {
-        return clubMembership;
-    }
-
-    public void setClubMembership(ClubMembership clubMembership) {
-        this.clubMembership = clubMembership;
     }
 }
