@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 public class Main {
 
     private static Integer MAX_NUMBER_OF_STUDENTS = 3;
-    private static Integer MAX_NUMBER_OF_PROFESSORS = 2;
+    private static Integer MAX_NUMBER_OF_PROFESSORS = 0;
     private static Integer MAX_NUMBER_OF_MATH_CLUBS = 2;
     private static Integer MAX_NUMBER_OF_MATH_PROJECTS = 2;
 
@@ -28,6 +28,7 @@ public class Main {
         List <MathProject> mathProjects = collectMathProjectsFromUser(input, mathClubs);
 
         printStudentWithLongestMembership(students);
+        printMathClubWithMostMembers(mathClubs);
 
 
     }
@@ -145,8 +146,9 @@ public class Main {
 
     private static List<Student> selectStudents(Scanner input, List<Student> students) {
         List<Student> selectedStudents = new ArrayList<>();
+        int totalStudents = students.size();
 
-        while (true) {
+        while (selectedStudents.size() < totalStudents) {
             List<Student> unselectedStudents = getUnselectedStudents(students, selectedStudents);
 
             System.out.println("Odaberite studente članove kluba:");
@@ -158,6 +160,7 @@ public class Main {
 
             System.out.print("Odaberite redni broj studenta (ili unesite 0 za završetak): ");
             int studentIndex = input.nextInt();
+            input.nextLine();
 
             if (studentIndex == 0) {
                 if (selectedStudents.isEmpty()) {
@@ -202,7 +205,7 @@ public class Main {
         System.out.print("Unesite opis projekta: ");
         String projectDescription = input.nextLine();
 
-        System.out.println("Odaberite klubove koji sudjeluju u projektu:");
+        System.out.println("Odaberite klubove koji sudjeluju u projektu (ili unesite 0 za završetak):");
 
         List<MathClub> selectedMathClubs = selectMathClubs(input, mathClubs);
 
@@ -260,7 +263,7 @@ public class Main {
         Student studentWithLongestMembership = findStudentWithLongestMembership(students);
         if (studentWithLongestMembership != null) {
             System.out.println("Student koji ima najduže članstvo u studentskom klubu je:");
-            System.out.printf("%s %s %s"
+            System.out.printf("%s %s %s\n"
                     ,studentWithLongestMembership.getName()
                     ,studentWithLongestMembership.getSurname()
                     ,studentWithLongestMembership.getStudentId());
@@ -287,6 +290,28 @@ public class Main {
         }
 
         return studentWithLongestMembership;
+    }
+
+    private static void printMathClubWithMostMembers(List<MathClub> mathClubs){
+        MathClub mathClubWithMostMembers = findMathClubWithMostMembers(mathClubs);
+        if (mathClubWithMostMembers != null){
+            System.out.println("Studentski klub koji ima najviše članova je:");
+            System.out.printf("%s %s\n", mathClubWithMostMembers.getName(),
+                    mathClubWithMostMembers.getAdress());
+        }
+    }
+    private static MathClub findMathClubWithMostMembers(List<MathClub> mathClubs){
+        MathClub mathClubWithMostMembers = null;
+        Integer maxNumberOfMembers = Integer.MIN_VALUE;
+        for (MathClub mathClub : mathClubs){
+            if(maxNumberOfMembers < mathClub.getStudents().size()){
+                maxNumberOfMembers = mathClub.getStudents().size();
+                mathClubWithMostMembers = mathClub;
+            }
+
+        }
+
+        return mathClubWithMostMembers;
     }
 
     private static Adress enterAdress(Scanner input) {
