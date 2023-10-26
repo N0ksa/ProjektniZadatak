@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 public class Main {
 
     private static Integer MAX_NUMBER_OF_STUDENTS = 3;
-    private static Integer MAX_NUMBER_OF_PROFFESSORS = 2;
+    private static Integer MAX_NUMBER_OF_PROFESSORS = 2;
     private static Integer MAX_NUMBER_OF_MATH_CLUBS = 2;
     private static Integer MAX_NUMBER_OF_MATH_PROJECTS = 2;
 
@@ -22,33 +22,24 @@ public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
 
-        List<Student> students = new ArrayList<>();
-        List<Professor> professors = new ArrayList<>();
-        List<MathClub> mathClubs = new ArrayList<>();
-        List <MathProject> mathProjects = new ArrayList<>();
+        List<Student> students = getStudentsFromUser(input);
+        List<Professor> professors = getProfessorsFromUser(input);
+        List<MathClub> mathClubs = getMathClubsFromUser(input, students);
+        List <MathProject> mathProjects = getMathProjectsFromUser(input, mathClubs);
 
-        for (int i = 0; i < MAX_NUMBER_OF_STUDENTS; i++){
+
+
+
+
+    }
+
+    private static List<Student> getStudentsFromUser(Scanner input) {
+        List<Student> students = new ArrayList<>();
+        for (int i = 0; i < MAX_NUMBER_OF_STUDENTS; i++) {
             System.out.printf("Molimo unesite %d. studenta:\n", i + 1);
             students.add(enterStudent(input));
         }
-
-        for (int i = 0; i < MAX_NUMBER_OF_PROFFESSORS; i++){
-            System.out.printf("Molimo unesite %d. profesora:\n", i + 1);
-            professors.add(enterProfessor(input));
-        }
-
-        for (int i = 0; i < MAX_NUMBER_OF_MATH_CLUBS; i++){
-            System.out.printf("Molimo unesite %d. matematički klub:\n", i + 1);
-            mathClubs.add(enterMathClub(input, students));
-        }
-
-        for (int i = 0; i < MAX_NUMBER_OF_MATH_CLUBS; i++){
-            System.out.printf("Molimo unesite %d. projekt\n", i + 1);
-            mathProjects.add(enterProject(input, mathClubs));
-        }
-
-
-
+        return students;
     }
 
     private static Student enterStudent(Scanner input){
@@ -91,6 +82,15 @@ public class Main {
         return newStudent;
     }
 
+    private static List<Professor> getProfessorsFromUser(Scanner input) {
+        List<Professor> professors = new ArrayList<>();
+        for (int i = 0; i < MAX_NUMBER_OF_PROFESSORS; i++) {
+            System.out.printf("Molimo unesite %d. profesora:\n", i + 1);
+            professors.add(enterProfessor(input));
+        }
+        return professors;
+    }
+
     private static Professor enterProfessor(Scanner input){
         System.out.print("Unesi ime profesora: ");
         String professorName = input.nextLine();
@@ -109,6 +109,15 @@ public class Main {
     }
 
 
+    private static List<MathClub> getMathClubsFromUser(Scanner input, List<Student> students) {
+        List<MathClub> mathClubs = new ArrayList<>();
+        for (int i = 0; i < MAX_NUMBER_OF_MATH_CLUBS; i++) {
+            System.out.printf("Molimo unesite %d. matematički klub:\n", i + 1);
+            mathClubs.add(enterMathClub(input, students));
+        }
+        return mathClubs;
+    }
+
     private static MathClub enterMathClub(Scanner input, List<Student> students){
         System.out.print("Upišite ime kluba: ");
         String clubName = input.nextLine();
@@ -121,21 +130,6 @@ public class Main {
         return new MathClub(clubName, adress, selectedStudents);
 
     }
-
-    private static MathProject enterProject(Scanner input, List<MathClub> mathClubs) {
-        System.out.print("Unesite ime projekta: ");
-        String projectName = input.nextLine();
-
-        System.out.print("Unesite opis projekta: ");
-        String projectDescription = input.nextLine();
-
-        System.out.println("Odaberite klubove koji sudjeluju u projektu:");
-
-        List<MathClub> selectedMathClubs = selectMathClubs(input, mathClubs);
-
-        return new MathProject(projectName, projectDescription, selectedMathClubs);
-    }
-
 
     private static List<Student> selectStudents(Scanner input, List<Student> students) {
         List<Student> selectedStudents = new ArrayList<>();
@@ -177,6 +171,30 @@ public class Main {
             }
         }
         return unselectedStudents;
+    }
+
+    private static List<MathProject> getMathProjectsFromUser(Scanner input, List<MathClub> mathClubs) {
+        List<MathProject> mathProjects = new ArrayList<>();
+        for (int i = 0; i < MAX_NUMBER_OF_MATH_CLUBS; i++) {
+            System.out.printf("Molimo unesite %d. projekt\n", i + 1);
+            mathProjects.add(enterProject(input, mathClubs));
+        }
+        return mathProjects;
+    }
+
+
+    private static MathProject enterProject(Scanner input, List<MathClub> mathClubs) {
+        System.out.print("Unesite ime projekta: ");
+        String projectName = input.nextLine();
+
+        System.out.print("Unesite opis projekta: ");
+        String projectDescription = input.nextLine();
+
+        System.out.println("Odaberite klubove koji sudjeluju u projektu:");
+
+        List<MathClub> selectedMathClubs = selectMathClubs(input, mathClubs);
+
+        return new MathProject(projectName, projectDescription, selectedMathClubs);
     }
 
 
