@@ -1,6 +1,6 @@
 package hr.java.project.entities;
 
-public class Student {
+public class Student extends NamedEntity {
     private String name;
     private String surname;
     private String studentId;
@@ -9,21 +9,12 @@ public class Student {
     private ClubMembership clubMembership;
 
     public Student(String name, String surname, String studentId, String email, Integer yearOfStudy) {
-        this.name = name;
+        super(name);
         this.surname = surname;
         this.studentId = studentId;
         this.email = email;
         this.yearOfStudy = yearOfStudy;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getSurname() {
         return surname;
     }

@@ -1,24 +1,16 @@
 package hr.java.project.entities;
 
-public class Professor {
+public class Professor extends NamedEntity {
     private String name;
     private String surname;
     private String professorId;
     private String email;
 
     public Professor(String name, String surname, String professorId, String email) {
-        this.name = name;
+        super(name);
         this.surname = surname;
         this.professorId = professorId;
         this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getSurname() {

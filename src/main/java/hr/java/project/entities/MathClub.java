@@ -2,23 +2,15 @@ package hr.java.project.entities;
 
 import java.util.List;
 
-public class MathClub {
+public class MathClub extends NamedEntity {
     private String name;
     private Adress adress;
     private List<Student> students;
 
     public MathClub(String name, Adress adress, List<Student> students) {
-        this.name = name;
+        super(name);
         this.adress = adress;
         this.students = students;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Adress getAdress() {
