@@ -7,15 +7,19 @@ import java.util.jar.Attributes;
 public class Competition extends NamedEntity {
 
     private String description;
+    private Adress adress;
     private LocalDateTime timeOfCompetition;
     private List <CompetitionResult> competitionResults;
 
-    public Competition(String name, String description, LocalDateTime timeOfCompetition, List<CompetitionResult> competitionResults) {
+    public Competition(String name, String description, Adress adress, LocalDateTime timeOfCompetition,
+                       List<CompetitionResult> competitionResults) {
         super(name);
         this.description = description;
+        this.adress = adress;
         this.timeOfCompetition = timeOfCompetition;
         this.competitionResults = competitionResults;
     }
+
 
     public String getDescription() {
         return description;
@@ -23,6 +27,14 @@ public class Competition extends NamedEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Adress getAdress() {
+        return adress;
+    }
+
+    public void setAdress(Adress adress) {
+        this.adress = adress;
     }
 
     public LocalDateTime getTimeOfCompetition() {
@@ -39,5 +51,25 @@ public class Competition extends NamedEntity {
 
     public void setCompetitionResults(List<CompetitionResult> competitionResults) {
         this.competitionResults = competitionResults;
+    }
+
+
+    public CompetitionResult getCompetitionResultsForParticipant(Student participant){
+        for (CompetitionResult competition: competitionResults){
+            if (competition.participant().equals(participant)){
+                return competition;
+            }
+        }
+
+        return null;
+    }
+
+    public boolean hasParticipant(Student participant){
+        for (CompetitionResult competition : competitionResults){
+            if (competition.participant().equals(participant)){
+                return true;
+            }
+        }
+        return false;
     }
 }
