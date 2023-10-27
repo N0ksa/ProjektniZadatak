@@ -1,7 +1,6 @@
 package hr.java.project.entities;
 
 public class Student extends NamedEntity {
-    private String name;
     private String surname;
     private String studentId;
     private String email;

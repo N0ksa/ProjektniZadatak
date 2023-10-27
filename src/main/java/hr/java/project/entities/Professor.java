@@ -1,7 +1,6 @@
 package hr.java.project.entities;
 
 public class Professor extends NamedEntity {
-    private String name;
     private String surname;
     private String professorId;
     private String email;

@@ -3,7 +3,6 @@ package hr.java.project.entities;
 import java.util.List;
 
 public class MathClub extends NamedEntity {
-    private String name;
     private Adress adress;
     private List<Student> students;
 

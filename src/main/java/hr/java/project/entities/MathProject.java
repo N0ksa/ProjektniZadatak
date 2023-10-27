@@ -3,7 +3,6 @@ package hr.java.project.entities;
 import java.util.List;
 
 public class MathProject extends NamedEntity {
-    private String name;
     private String description;
     private List<MathClub> collaborators;
 
