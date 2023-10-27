@@ -2,7 +2,9 @@ package hr.java.project.main;
 
 import hr.java.project.entities.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ public class Main {
     private static Integer MAX_NUMBER_OF_PROFESSORS = 0;
     private static Integer MAX_NUMBER_OF_MATH_CLUBS = 2;
     private static Integer MAX_NUMBER_OF_MATH_PROJECTS = 2;
+    private static Integer MAX_NUMBER_OF_MATH_COMPETITIONS = 2;
 
     private static final String VALID_POSTAL_CODE_REGEX = "[0-9]+";
 
@@ -26,6 +29,7 @@ public class Main {
         List<Professor> professors = collectProfessorsFromUser(input);
         List<MathClub> mathClubs = collectMathClubsFromUser(input, students);
         List <MathProject> mathProjects = collectMathProjectsFromUser(input, mathClubs);
+        List<Competition> mathCompetitions  = collectMathCompetitionsFromUser(input, students);
 
         printStudentWithLongestMembership(students);
         printMathClubWithMostMembers(mathClubs);
@@ -144,14 +148,45 @@ public class Main {
 
     }
 
-    private static List<Student> selectStudents(Scanner input, List<Student> students) {
+    private static List<Competition> collectMathCompetitionsFromUser(Scanner input, List<Student> students) {
+        List<Competition> mathCompetitions = new ArrayList<>();
+        for (int i = 0; i < MAX_NUMBER_OF_MATH_COMPETITIONS; i++) {
+            System.out.printf("Molimo unesite %d. matematičko natjecanje:\n", i + 1);
+            mathCompetitions.add(createMathCompetition(input, students));
+        }
+        return mathCompetitions;
+    }
+
+    private static Competition createMathCompetition(Scanner input, List<Student> students) {
+        System.out.print("Upišite ime natjecanja: ");
+        String competitionName = input.nextLine();
+
+        System.out.print("Upišite opis natjecanja: ");
+        String competitionDescription = input.nextLine();
+
+        System.out.print("Upišite vrijeme natjecanja (dd.MM.yyyy HH:mm:ss): ");
+        String timeString = input.nextLine();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+        LocalDateTime timeOfCompetition = LocalDateTime.parse(timeString, formatter);
+
+        System.out.println("Upišite informacije o adresi natjecanja");
+        Adress competitionAdress = enterAdress(input);
+
+        List<CompetitionResult> competitionResults = selectCompetitionResults(input, students);
+
+        return new Competition(competitionName, competitionDescription, competitionAdress, timeOfCompetition, competitionResults);
+    }
+
+    private static List<CompetitionResult> selectCompetitionResults(Scanner input, List<Student> students) {
+        List<CompetitionResult> competitionResults = new ArrayList<>();
+
         List<Student> selectedStudents = new ArrayList<>();
         int totalStudents = students.size();
 
         while (selectedStudents.size() < totalStudents) {
             List<Student> unselectedStudents = getUnselectedStudents(students, selectedStudents);
 
-            System.out.println("Odaberite studente članove kluba:");
+            System.out.println("Odaberite studente:");
 
             for (int i = 0; i < unselectedStudents.size(); i++) {
                 System.out.printf("%d. %s %s\n", i + 1, unselectedStudents.get(i).getName(),
@@ -165,12 +200,65 @@ public class Main {
             if (studentIndex == 0) {
                 if (selectedStudents.isEmpty()) {
                     System.out.println("Molimo odaberite barem jednog studenta.");
-                } else {
+                }
+                else {
                     break;
                 }
-            } else if (studentIndex > 0 && studentIndex <= unselectedStudents.size()) {
+            }
+            else if (studentIndex > 0 && studentIndex <= unselectedStudents.size()) {
                 selectedStudents.add(unselectedStudents.get(studentIndex - 1));
-            } else {
+
+                System.out.print("Unesite rezultat natjecatelja: ");
+                BigDecimal participantScore = input.nextBigDecimal();
+                input.nextLine();
+
+                CompetitionResult participantResult = new CompetitionResult(unselectedStudents.get(studentIndex - 1),
+                        participantScore);
+                competitionResults.add(participantResult);
+
+
+            }
+            else {
+                System.out.println("Unijeli ste krivi broj. Pokušajte ponovno!");
+            }
+        }
+
+
+
+
+        return competitionResults;
+    }
+
+    private static List<Student> selectStudents(Scanner input, List<Student> students) {
+        List<Student> selectedStudents = new ArrayList<>();
+        int totalStudents = students.size();
+
+        while (selectedStudents.size() < totalStudents) {
+            List<Student> unselectedStudents = getUnselectedStudents(students, selectedStudents);
+
+            System.out.println("Odaberite studente članove kluba:");
+    
+            for (int i = 0; i < unselectedStudents.size(); i++) {
+                System.out.printf("%d. %s %s\n", i + 1, unselectedStudents.get(i).getName(),
+                        unselectedStudents.get(i).getSurname());
+            }
+
+            System.out.print("Odaberite redni broj studenta (ili unesite 0 za završetak): ");
+            int studentIndex = input.nextInt();
+            input.nextLine();
+
+            if (studentIndex == 0) {
+                if (selectedStudents.isEmpty()) {
+                    System.out.println("Molimo odaberite barem jednog studenta.");
+                }
+                else {
+                    break;
+                }
+            }
+            else if (studentIndex > 0 && studentIndex <= unselectedStudents.size()) {
+                selectedStudents.add(unselectedStudents.get(studentIndex - 1));
+            }
+            else {
                 System.out.println("Unijeli ste krivi broj. Pokušajte ponovno!");
             }
         }

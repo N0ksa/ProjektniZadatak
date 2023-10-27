@@ -1,5 +1,6 @@
 package hr.java.project.entities;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.jar.Attributes;
@@ -71,5 +72,18 @@ public class Competition extends NamedEntity {
             }
         }
         return false;
+    }
+
+    public Student findWinner(){
+        Student winner = null;
+        BigDecimal winnerScore = null;
+        for (CompetitionResult competition: competitionResults){
+            BigDecimal score  = competition.score();
+            if (winner == null || (winnerScore == null || score.compareTo(winnerScore) == 1)){
+                winner = competition.participant();
+            }
+        }
+
+        return winner;
     }
 }
