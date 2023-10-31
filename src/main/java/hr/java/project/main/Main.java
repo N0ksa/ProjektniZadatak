@@ -1,14 +1,13 @@
 package hr.java.project.main;
 
 import hr.java.project.entities.*;
+import hr.java.project.enums.YearOfStudy;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,7 +63,9 @@ public class Main {
         int yearOfStudy = input.nextInt();
         input.nextLine();
 
-        Student newStudent = new Student(studentName, studentSurname, studentID, studentEmail, yearOfStudy);
+        Map<String, Integer> grades = collectSubjectsAndGrades(input, yearOfStudy);
+
+        Student newStudent = new Student(studentName, studentSurname, studentID, studentEmail, yearOfStudy, grades);
 
         int choice;
         do {
@@ -85,6 +86,36 @@ public class Main {
         } while (choice != 1 && choice != 2);
 
         return newStudent;
+    }
+
+    private static Map<String, Integer> collectSubjectsAndGrades(Scanner input, int yearOfStudy){
+        Map <String, Integer> grades = new HashMap<>();
+        for (int currentYear = 1; currentYear <= yearOfStudy; currentYear++){
+            System.out.printf("%d. godina:\n", currentYear);
+            YearOfStudy year = collectYearOfStudy(currentYear);
+
+            if (year != null){
+                List<String> availableSubjects = year.getAvailableSubjects();
+                for (String subject: availableSubjects){
+                    System.out.printf("Unesite ocijenu iz '%s':", subject);
+                    Integer subjectGrade = input.nextInt();
+
+                    grades.put(subject, subjectGrade);
+                }
+            }
+
+        }
+
+        return grades;
+    }
+
+    private static YearOfStudy collectYearOfStudy(int yearOfStudy){
+        for (YearOfStudy year : YearOfStudy.values()){
+            if (year.getYear() == yearOfStudy){
+                return year;
+            }
+        }
+        return null;
     }
 
     private static ClubMembership createClubMembership(Scanner input) {

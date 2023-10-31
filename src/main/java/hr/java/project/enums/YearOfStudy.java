@@ -25,4 +25,13 @@ public enum YearOfStudy {
         this.year = year;
         this.availableSubjects = availableSubjects;
     }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public List<String> getAvailableSubjects() {
+        return availableSubjects;
+    }
+
 }
