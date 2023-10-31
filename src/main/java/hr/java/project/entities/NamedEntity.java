@@ -1,6 +1,6 @@
 package hr.java.project.entities;
 
-public class NamedEntity {
+public abstract class NamedEntity {
     private String name;
 
     public NamedEntity(String name) {
