@@ -211,14 +211,11 @@ public class Main {
     private static List<CompetitionResult> selectCompetitionResults(Scanner input, List<Student> students) {
         List<CompetitionResult> competitionResults = new ArrayList<>();
 
-        List<Student> selectedStudents = new ArrayList<>();
-        int totalStudents = students.size();
+        List<Student> unselectedStudents = new ArrayList<>(students);
 
-        while (selectedStudents.size() < totalStudents) {
-            List<Student> unselectedStudents = getUnselectedStudents(students, selectedStudents);
+        System.out.println("Odaberite studente:");
 
-            System.out.println("Odaberite studente:");
-
+        while (!unselectedStudents.isEmpty()) {
             for (int i = 0; i < unselectedStudents.size(); i++) {
                 System.out.printf("%d. %s %s\n", i + 1, unselectedStudents.get(i).getName(),
                         unselectedStudents.get(i).getSurname());
@@ -229,49 +226,37 @@ public class Main {
             input.nextLine();
 
             if (studentIndex == 0) {
-                if (selectedStudents.isEmpty()) {
-                    System.out.println("Molimo odaberite barem jednog studenta.");
-                }
-                else {
+                if (competitionResults.isEmpty()) {
+                    System.out.println("Morate odabrati barem jednog studenta.");
+                } else {
                     break;
                 }
-            }
-            else if (studentIndex > 0 && studentIndex <= unselectedStudents.size()) {
-                selectedStudents.add(unselectedStudents.get(studentIndex - 1));
+            } else if (studentIndex > 0 && studentIndex <= unselectedStudents.size()) {
+                Student student = unselectedStudents.remove(studentIndex - 1);
 
                 System.out.print("Unesite rezultat natjecatelja: ");
                 BigDecimal participantScore = input.nextBigDecimal();
                 input.nextLine();
 
-                CompetitionResult participantResult = new CompetitionResult(unselectedStudents.get(studentIndex - 1),
-                        participantScore);
+                CompetitionResult participantResult = new CompetitionResult(student, participantScore);
                 competitionResults.add(participantResult);
-
-
-            }
-            else {
+            } else {
                 System.out.println("Unijeli ste krivi broj. Pokušajte ponovno!");
             }
         }
-
-
-
 
         return competitionResults;
     }
 
     private static List<Student> selectStudents(Scanner input, List<Student> students) {
+        List<Student> unselectedStudents = new ArrayList<>(students);
         List<Student> selectedStudents = new ArrayList<>();
-        int totalStudents = students.size();
 
-        while (selectedStudents.size() < totalStudents) {
-            List<Student> unselectedStudents = getUnselectedStudents(students, selectedStudents);
+        System.out.println("Odaberite studente članove kluba:");
 
-            System.out.println("Odaberite studente članove kluba:");
-    
+        while (!unselectedStudents.isEmpty()) {
             for (int i = 0; i < unselectedStudents.size(); i++) {
-                System.out.printf("%d. %s %s\n", i + 1, unselectedStudents.get(i).getName(),
-                        unselectedStudents.get(i).getSurname());
+                System.out.printf("%d. %s %s\n", i + 1, unselectedStudents.get(i).getName(), unselectedStudents.get(i).getSurname());
             }
 
             System.out.print("Odaberite redni broj studenta (ili unesite 0 za završetak): ");
@@ -281,30 +266,17 @@ public class Main {
             if (studentIndex == 0) {
                 if (selectedStudents.isEmpty()) {
                     System.out.println("Molimo odaberite barem jednog studenta.");
-                }
-                else {
+                } else {
                     break;
                 }
-            }
-            else if (studentIndex > 0 && studentIndex <= unselectedStudents.size()) {
-                selectedStudents.add(unselectedStudents.get(studentIndex - 1));
-            }
-            else {
+            } else if (studentIndex > 0 && studentIndex <= unselectedStudents.size()) {
+                selectedStudents.add(unselectedStudents.remove(studentIndex - 1));
+            } else {
                 System.out.println("Unijeli ste krivi broj. Pokušajte ponovno!");
             }
         }
 
         return selectedStudents;
-    }
-
-    private static List<Student> getUnselectedStudents(List<Student> allStudents, List<Student> selectedStudents) {
-        List<Student> unselectedStudents = new ArrayList<>();
-        for (Student student : allStudents) {
-            if (!selectedStudents.contains(student)) {
-                unselectedStudents.add(student);
-            }
-        }
-        return unselectedStudents;
     }
 
     private static List<MathProject> collectMathProjectsFromUser(Scanner input, List<MathClub> mathClubs) {
@@ -326,55 +298,76 @@ public class Main {
 
         System.out.println("Odaberite klubove koji sudjeluju u projektu (ili unesite 0 za završetak):");
 
-        List<MathClub> selectedMathClubs = selectMathClubs(input, mathClubs);
+        Map<MathClub, List <Student>> collaborators = selectCollaborators(input, mathClubs);
 
-        return new MathProject(projectName, projectDescription, selectedMathClubs);
+        return new MathProject(projectName, projectDescription, collaborators);
     }
 
 
-    private static List<MathClub> selectMathClubs(Scanner input, List<MathClub> mathClubs) {
-        List<MathClub> selectedMathClubs = new ArrayList<>();
-        int totalClubs = mathClubs.size();
 
-        while (selectedMathClubs.size() < totalClubs) {
-            List<MathClub> unselectedClubs = getUnselectedMathClubs(selectedMathClubs, mathClubs);
+    private static Map<MathClub, List<Student>> selectCollaborators(Scanner input, List<MathClub> mathClubs) {
+        Map<MathClub, List<Student>> collaborators = new HashMap<>();
+        List<MathClub> unselectedClubs = new ArrayList<>(mathClubs);
 
-           for (int i = 0; i < unselectedClubs.size(); i++){
-               System.out.printf("%d. %s\n", i + 1, unselectedClubs.get(i).getName());
-           }
+        while (!unselectedClubs.isEmpty()) {
+            System.out.println("Dostupni matematički klubovi:");
+            for (int i = 0; i < unselectedClubs.size(); i++) {
+                System.out.printf("%d. %s%n", i + 1, unselectedClubs.get(i).getName());
+            }
 
-           int indexOfMathClub = input.nextInt();
-           input.nextLine();
+            System.out.print("Odaberi matematički klub (0 za završetak): ");
+            int indexOfMathClub = input.nextInt();
+            input.nextLine();
 
             if (indexOfMathClub == 0) {
-                if (selectedMathClubs.isEmpty()) {
-                    System.out.println("Molimo odaberite barem jedan matematički klub.");
-                }
-                else {
+                if (collaborators.isEmpty()) {
+                    System.out.println("Mora biti odabran barem jedan matematički klub.");
+                } else {
                     break;
                 }
+            } else if (indexOfMathClub > 0 && indexOfMathClub <= unselectedClubs.size()) {
+                MathClub selectedClub = unselectedClubs.remove(indexOfMathClub - 1);
+                List<Student> collaboratingStudents = selectCollaboratingStudents(input, selectedClub);
+                collaborators.put(selectedClub, collaboratingStudents);
+            } else {
+                System.out.println("Invalid selection.");
             }
-            else if (indexOfMathClub > 0 && indexOfMathClub <= unselectedClubs.size()) {
-                MathClub selectedClub = unselectedClubs.get(indexOfMathClub - 1);
-                selectedMathClubs.add(selectedClub);
+        }
+
+        return collaborators;
+    }
+
+    private static List<Student> selectCollaboratingStudents(Scanner input, MathClub mathClub) {
+        List<Student> collaboratingStudents = new ArrayList<>();
+        List<Student> unselectedStudents = new ArrayList<>(mathClub.getStudents());
+
+        System.out.println("Dostupni studenti:");
+
+        while (!unselectedStudents.isEmpty()) {
+            for (int i = 0; i < unselectedStudents.size(); i++) {
+                System.out.printf("%d. %s %s\n", i + 1, unselectedStudents.get(i).getName(), unselectedStudents.get(i).getSurname());
             }
-            else {
+
+            System.out.print("Odaberite studenta (0 za završetak unosa): ");
+            int selectedStudentNumber = input.nextInt();
+            input.nextLine();
+
+            if (selectedStudentNumber == 0) {
+                if (collaboratingStudents.isEmpty()) {
+                    System.out.println("Morate odabrati barem jednog studenta.");
+                } else {
+                    break;
+                }
+            } else if (selectedStudentNumber > 0 && selectedStudentNumber <= unselectedStudents.size()) {
+                int studentIndex = selectedStudentNumber - 1;
+                Student selectedStudent = unselectedStudents.remove(studentIndex);
+                collaboratingStudents.add(selectedStudent);
+            } else {
                 System.out.println("Neispravan odabir.");
             }
         }
 
-        return selectedMathClubs;
-    }
-
-    private static List<MathClub> getUnselectedMathClubs(List<MathClub> selectedClubs, List<MathClub> allMathClubs) {
-        List<MathClub> unselectedClubs = new ArrayList<>();
-
-        for (MathClub club : allMathClubs) {
-            if (!selectedClubs.contains(club)) {
-                unselectedClubs.add(club);
-            }
-        }
-        return unselectedClubs;
+        return collaboratingStudents;
     }
 
 
