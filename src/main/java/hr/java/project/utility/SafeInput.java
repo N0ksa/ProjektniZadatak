@@ -1,6 +1,10 @@
 package hr.java.project.utility;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.function.Predicate;
@@ -16,6 +20,10 @@ import org.slf4j.LoggerFactory;
 public class SafeInput {
     private static final String VALID_WEB_ADDRESS_REGEX = "www\\.[A-Za-z0-9]+\\.[A-Za-z]+";
     private static final String VALID_POSTAL_CODE_REGEX = "[0-9]+";
+    private static final String VALID_LOCAL_DATE_REGEX = "dd.MM.yyyy.";
+    private static final String VALID_LOCAL_DATE_TIME_REGEX = "dd.MM.yyyy HH:mm:ss";
+
+    private static final String VALID_MEMBER_ID_REGEX = "\\d{5}";
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
@@ -46,6 +54,7 @@ public class SafeInput {
             }catch (InputPredicateException e){
                 System.out.println(e.getMessage());
                 validInput = false;
+                logger.info(e.getMessage(), e);
 
             }finally {
                 input.nextLine();
@@ -105,17 +114,17 @@ public class SafeInput {
         Pattern pattern = Pattern.compile(VALID_WEB_ADDRESS_REGEX);
 
         Matcher matcher;
-        Boolean validWebAdress = Boolean.TRUE;
+        boolean validWebAdress = true;
         String webAdress;
 
         do {
-            validWebAdress = Boolean.TRUE;
+            validWebAdress = true;
             webAdress = input.nextLine();
             matcher = pattern.matcher(webAdress);
 
             if (!matcher.matches()) {
                 System.out.print("\tMolim unesite web adresu u ispravnom formatu (www.[A-Za-z0-9].[A-Za-z]+): ");
-                validWebAdress = Boolean.FALSE;
+                validWebAdress = false;
             }
         } while (!validWebAdress);
 
@@ -132,19 +141,109 @@ public class SafeInput {
         Pattern pattern = Pattern.compile(VALID_POSTAL_CODE_REGEX);
 
         Matcher matcher;
-        Boolean validPostalCode = Boolean.TRUE;
+        boolean validPostalCode = true;
         String postalCode;
         do{
-            validPostalCode = Boolean.TRUE;
+            validPostalCode = true;
             postalCode = input.nextLine();
             matcher = pattern.matcher(postalCode);
             if (!matcher.matches()){
                 System.out.print("\tMolim unesite poštanski broj u ispravnom formatu (samo su brojevi dopušteni): ");
-                validPostalCode = Boolean.FALSE;
+                validPostalCode = false;
             }
         }while(!validPostalCode);
 
         return postalCode;
+    }
+
+    /**
+     * Omogućuje korisniku unos ispravnog datuma.
+     * @param input Scanner objekt kojim se učitavaju novi podaci.
+     * @return LocalDate - uneseni datum u ispravnom formatu.
+     */
+    public static LocalDate secureCorrectLocalDate(Scanner input){
+        boolean validInput = false;
+        LocalDate joinDate = null;
+
+        do{
+            String dateString = input.nextLine();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(VALID_LOCAL_DATE_REGEX);
+            validInput = true;
+
+            try{
+                 joinDate = LocalDate.parse(dateString, formatter);
+            }
+            catch(DateTimeParseException e){
+                System.out.println("Niste unijeli datum u ispravnom formatu. Molim pokušajte ponovno.");
+                logger.info("Neispravan format", e);
+                validInput = false;
+            }
+
+
+        }while(!validInput);
+
+        return joinDate;
+    }
+
+
+    /**
+     * Omogućuje korisniku unos ispravnog datuma i vremena.
+     * @param input Scanner objekt kojim se učitavaju novi podaci.
+     * @return LocalDate - uneseni datum i vrijeme u ispravnom formatu.
+     */
+    public static LocalDateTime secureCorrectLocalDateTime(Scanner input){
+        boolean validInput = false;
+        LocalDateTime joinDate = null;
+
+        do{
+            String dateString = input.nextLine();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(VALID_LOCAL_DATE_TIME_REGEX);
+            validInput = true;
+
+            try{
+                joinDate = LocalDateTime.parse(dateString, formatter);
+            }
+            catch(DateTimeParseException e){
+                System.out.println("Niste unijeli datum i vrijeme u ispravnom formatu. Molim pokušajte ponovno.");
+                logger.info("Neispravan format datuma i vremena.", e);
+                validInput = false;
+            }
+
+
+        }while(!validInput);
+
+        return joinDate;
+    }
+
+
+    /**
+     * Omogućuje korisniku unos ispravne članske iskaznice.
+     * @param input Scanner objekt kojim se učitavaju novi podaci.
+     * @return String - ispravan broj članske iskaznice.
+     */
+    public static String secureCorrectMemberId(Scanner input){
+        Pattern pattern = Pattern.compile(VALID_MEMBER_ID_REGEX);
+
+        Matcher matcher;
+        String memberId;
+        boolean validMemberId = false;
+
+        do{
+            validMemberId = true;
+            memberId = input.nextLine();
+            matcher = pattern.matcher(memberId);
+
+            if (!matcher.matches()){
+                System.out.println("Molim unesite broj članske iskaznice u ispravnom formatu (točno 5 brojeva bez slova)");
+                validMemberId = false;
+                logger.info("Neispravan format članske iskaznice.");
+
+            }
+
+
+        }while(!validMemberId);
+
+        return memberId;
     }
 
 

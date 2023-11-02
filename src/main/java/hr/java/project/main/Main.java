@@ -23,8 +23,6 @@ public class Main {
     private static final Integer MAX_NUMBER_OF_MATH_PROJECTS = 2;
     private static final Integer MAX_NUMBER_OF_MATH_COMPETITIONS = 2;
 
-    private static final String VALID_POSTAL_CODE_REGEX = "[0-9]+";
-
     private static final Logger logger = LoggerFactory.getLogger(Main. class);
 
     public static void main(String[] args) {
@@ -67,7 +65,7 @@ public class Main {
         String studentID = input.nextLine();
 
         System.out.print("Unesi email studenta: ");
-        String studentEmail = input.nextLine();
+        String studentEmail = SafeInput.enterValidWebAdress(input);
 
         System.out.print("Unesi godinu studija studenta: ");
         int yearOfStudy = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 1 && x <= 3);
@@ -77,22 +75,15 @@ public class Main {
         Student newStudent = new Student(studentName, studentSurname, studentID, studentEmail, yearOfStudy, grades);
 
         int choice;
-        do {
-            System.out.println("Da li je student član matematičkog kluba?");
-            System.out.println("1-Da\n2-Ne");
-            choice = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 1 && x <=2);
-            input.nextLine();
+        System.out.println("Da li je student član matematičkog kluba?");
+        System.out.println("1-Da\n2-Ne");
+        choice = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 1 && x <= 2);
 
-            if (choice == 1) {
+        if (choice == 1) {
 
-                ClubMembership clubMembership = createClubMembership(input);
-                newStudent.setClubMembership(clubMembership);
-
-            }
-            else if (choice != 2) {
-                System.out.println("Molimo unesite 1 za 'Da' ili 2 za 'Ne'.");
-            }
-        } while (choice != 1 && choice != 2);
+            ClubMembership clubMembership = createClubMembership(input);
+            newStudent.setClubMembership(clubMembership);
+        }
 
         return newStudent;
     }
@@ -108,7 +99,7 @@ public class Main {
                 List<String> availableSubjects = year.getAvailableSubjects();
                 for (String subject: availableSubjects){
                     System.out.printf("Unesite ocijenu iz '%s':", subject);
-                    Integer subjectGrade = input.nextInt();
+                    Integer subjectGrade = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 1 && x <= 5);
 
                     grades.put(subject, subjectGrade);
                 }
@@ -130,12 +121,10 @@ public class Main {
 
     private static ClubMembership createClubMembership(Scanner input) {
         System.out.println("Upišite datum učlanjivanja (dd.MM.yyyy.): ");
-        String dateString = input.nextLine();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.");
-        LocalDate joinDate = LocalDate.parse(dateString, formatter);
+        LocalDate joinDate = SafeInput.secureCorrectLocalDate(input);
 
         System.out.println("Upišite broj članske iskaznice: ");
-        String membershipId = input.nextLine();
+        String membershipId = SafeInput.secureCorrectMemberId(input);
 
         return new ClubMembership(joinDate, membershipId);
     }
@@ -160,7 +149,7 @@ public class Main {
         String professorId = input.nextLine();
 
         System.out.print("Unesi email profesora: ");
-        String professorEmail = input.nextLine();
+        String professorEmail = SafeInput.enterValidWebAdress(input);
 
         return new Professor(professorName, professorSurname, professorId, professorEmail);
 
@@ -206,9 +195,7 @@ public class Main {
         String competitionDescription = input.nextLine();
 
         System.out.print("Upišite vrijeme natjecanja (dd.MM.yyyy HH:mm:ss): ");
-        String timeString = input.nextLine();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-        LocalDateTime timeOfCompetition = LocalDateTime.parse(timeString, formatter);
+        LocalDateTime timeOfCompetition = SafeInput.secureCorrectLocalDateTime(input);
 
         System.out.println("Upišite informacije o adresi natjecanja");
         Adress competitionAdress = enterAdress(input);
@@ -232,26 +219,26 @@ public class Main {
             }
 
             System.out.print("Odaberite redni broj studenta (ili unesite 0 za završetak): ");
-            int studentIndex = input.nextInt();
-            input.nextLine();
+            int studentIndex = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 0 && x <= unselectedStudents.size());
 
             if (studentIndex == 0) {
                 if (competitionResults.isEmpty()) {
                     System.out.println("Morate odabrati barem jednog studenta.");
-                } else {
+                }
+                else {
                     break;
                 }
-            } else if (studentIndex > 0 && studentIndex <= unselectedStudents.size()) {
+            }
+            else if (studentIndex > 0 && studentIndex <= unselectedStudents.size()) {
                 Student student = unselectedStudents.remove(studentIndex - 1);
 
                 System.out.print("Unesite rezultat natjecatelja: ");
-                BigDecimal participantScore = input.nextBigDecimal();
-                input.nextLine();
+                BigDecimal participantScore = SafeInput.secureCorrectBigDecimalInterval(input,
+                        (BigDecimal x) -> (x.compareTo(BigDecimal.ZERO) > 0) &&
+                                (x.compareTo(BigDecimal.valueOf(100)) <= 0));
 
                 CompetitionResult participantResult = new CompetitionResult(student, participantScore);
                 competitionResults.add(participantResult);
-            } else {
-                System.out.println("Unijeli ste krivi broj. Pokušajte ponovno!");
             }
         }
 
@@ -270,19 +257,18 @@ public class Main {
             }
 
             System.out.print("Odaberite redni broj studenta (ili unesite 0 za završetak): ");
-            int studentIndex = input.nextInt();
-            input.nextLine();
+            int studentIndex = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 0 && x <= unselectedStudents.size());
 
             if (studentIndex == 0) {
                 if (selectedStudents.isEmpty()) {
                     System.out.println("Molimo odaberite barem jednog studenta.");
-                } else {
+                }
+                else {
                     break;
                 }
-            } else if (studentIndex > 0 && studentIndex <= unselectedStudents.size()) {
+            }
+            else {
                 selectedStudents.add(unselectedStudents.remove(studentIndex - 1));
-            } else {
-                System.out.println("Unijeli ste krivi broj. Pokušajte ponovno!");
             }
         }
 
@@ -326,21 +312,20 @@ public class Main {
             }
 
             System.out.print("Odaberi matematički klub (0 za završetak): ");
-            int indexOfMathClub = input.nextInt();
-            input.nextLine();
+            int indexOfMathClub = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 0 && x <= unselectedClubs.size());
 
             if (indexOfMathClub == 0) {
                 if (collaborators.isEmpty()) {
                     System.out.println("Mora biti odabran barem jedan matematički klub.");
-                } else {
+                }
+                else {
                     break;
                 }
-            } else if (indexOfMathClub > 0 && indexOfMathClub <= unselectedClubs.size()) {
+            }
+            else{
                 MathClub selectedClub = unselectedClubs.remove(indexOfMathClub - 1);
                 List<Student> collaboratingStudents = selectCollaboratingStudents(input, selectedClub);
                 collaborators.put(selectedClub, collaboratingStudents);
-            } else {
-                System.out.println("Invalid selection.");
             }
         }
 
@@ -359,21 +344,19 @@ public class Main {
             }
 
             System.out.print("Odaberite studenta (0 za završetak unosa): ");
-            int selectedStudentNumber = input.nextInt();
-            input.nextLine();
+            int selectedStudentNumber = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 0 && x <= unselectedStudents.size());
 
             if (selectedStudentNumber == 0) {
                 if (collaboratingStudents.isEmpty()) {
                     System.out.println("Morate odabrati barem jednog studenta.");
-                } else {
+                }
+                else {
                     break;
                 }
-            } else if (selectedStudentNumber > 0 && selectedStudentNumber <= unselectedStudents.size()) {
+            } else {
                 int studentIndex = selectedStudentNumber - 1;
                 Student selectedStudent = unselectedStudents.remove(studentIndex);
                 collaboratingStudents.add(selectedStudent);
-            } else {
-                System.out.println("Neispravan odabir.");
             }
         }
 
@@ -393,7 +376,7 @@ public class Main {
         String cityName = input.nextLine();
 
         System.out.print("\tUnesite poštanski broj: ");
-        String postalCode = enterValidPostalCode(input);
+        String postalCode = SafeInput.enterValidPostalCode(input);
 
 
         return adressBuilder.setHouseNumber(houseNumber)
@@ -401,25 +384,6 @@ public class Main {
                 .setPostalCode(postalCode)
                 .build();
 
-    }
-
-    private static String enterValidPostalCode(Scanner input){
-        Pattern pattern = Pattern.compile(VALID_POSTAL_CODE_REGEX);
-
-        Matcher matcher;
-        Boolean validPostalCode = Boolean.TRUE;
-        String postalCode;
-        do{
-            validPostalCode = Boolean.TRUE;
-            postalCode = input.nextLine();
-            matcher = pattern.matcher(postalCode);
-            if (!matcher.matches()){
-                System.out.print("\tMolim unesite poštanski broj u ispravnom formatu (samo su brojevi dopušteni): ");
-                validPostalCode = Boolean.FALSE;
-            }
-        }while(!validPostalCode);
-
-        return postalCode;
     }
 
     private static void printStudentWithLongestMembership(List<Student> students) {
