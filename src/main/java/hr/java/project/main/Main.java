@@ -11,6 +11,10 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import hr.java.project.utility.SafeInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Main {
 
     private static final Integer MAX_NUMBER_OF_STUDENTS = 3;
@@ -20,6 +24,8 @@ public class Main {
     private static final Integer MAX_NUMBER_OF_MATH_COMPETITIONS = 2;
 
     private static final String VALID_POSTAL_CODE_REGEX = "[0-9]+";
+
+    private static final Logger logger = LoggerFactory.getLogger(Main. class);
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
@@ -64,8 +70,7 @@ public class Main {
         String studentEmail = input.nextLine();
 
         System.out.print("Unesi godinu studija studenta: ");
-        int yearOfStudy = input.nextInt();
-        input.nextLine();
+        int yearOfStudy = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 1 && x <= 3);
 
         Map<String, Integer> grades = collectSubjectsAndGrades(input, yearOfStudy);
 
@@ -75,7 +80,7 @@ public class Main {
         do {
             System.out.println("Da li je student član matematičkog kluba?");
             System.out.println("1-Da\n2-Ne");
-            choice = input.nextInt();
+            choice = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 1 && x <=2);
             input.nextLine();
 
             if (choice == 1) {
