@@ -96,14 +96,13 @@ public class Student extends NamedEntity implements Gradable{
 
     @Override
     public BigDecimal calculateScore(List<CompetitionResult> competitionsResults, Integer numberOfCollaborations) {
-        BigDecimal averageGrade =  calculateAverageGrade();
 
         BigDecimal averageGradeWeight = new BigDecimal(0.2);
         BigDecimal numberOfCollaborationsWeight = new BigDecimal(0.3);
         BigDecimal competitionResultsWeight = new BigDecimal(0.5);
 
         BigDecimal normalizedAverageGrade = calculateAverageGrade().multiply(BigDecimal.TWO);
-        BigDecimal scoreFromAllCompetitions = collectAllScores(competitionsResults);
+        BigDecimal scoreFromAllCompetitions = collectAllScoresFromCompetitions(competitionsResults);
 
         return scoreFromAllCompetitions.multiply(competitionResultsWeight)
                 .add(normalizedAverageGrade.multiply(averageGradeWeight))
@@ -112,7 +111,7 @@ public class Student extends NamedEntity implements Gradable{
 
     }
 
-    private BigDecimal collectAllScores(List <CompetitionResult> studentCompetitions){
+    private BigDecimal collectAllScoresFromCompetitions(List <CompetitionResult> studentCompetitions){
         BigDecimal sumOfAllScores = BigDecimal.ZERO;
         for (CompetitionResult competition: studentCompetitions){
             sumOfAllScores = sumOfAllScores.add(competition.score());

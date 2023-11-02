@@ -13,11 +13,11 @@ import java.util.regex.Pattern;
 
 public class Main {
 
-    private static Integer MAX_NUMBER_OF_STUDENTS = 3;
-    private static Integer MAX_NUMBER_OF_PROFESSORS = 0;
-    private static Integer MAX_NUMBER_OF_MATH_CLUBS = 2;
-    private static Integer MAX_NUMBER_OF_MATH_PROJECTS = 2;
-    private static Integer MAX_NUMBER_OF_MATH_COMPETITIONS = 2;
+    private static final Integer MAX_NUMBER_OF_STUDENTS = 3;
+    private static final Integer MAX_NUMBER_OF_PROFESSORS = 0;
+    private static final Integer MAX_NUMBER_OF_MATH_CLUBS = 2;
+    private static final Integer MAX_NUMBER_OF_MATH_PROJECTS = 2;
+    private static final Integer MAX_NUMBER_OF_MATH_COMPETITIONS = 2;
 
     private static final String VALID_POSTAL_CODE_REGEX = "[0-9]+";
 
@@ -33,16 +33,12 @@ public class Main {
         printStudentWithLongestMembership(students);
         printMathClubWithMostMembers(mathClubs);
 
-        for (Student student : students){
-           BigDecimal overallScore = student.calculateScore(collectAllResultsForParticipantInCompetitions(student, mathCompetitions),
-                    collectNumberOfStudentParticipationsInProjects(student, mathProjects));
-
-            System.out.printf("Student %s %s skupio je sveukupno %.2f bodova\n", student.getName(), student.getSurname(),
-                    overallScore);
-        }
+        calculateAndPrintStudentResults(students, mathCompetitions, mathProjects);
+        calculateAndPrintMathClubResults(mathClubs, mathCompetitions, mathProjects);
 
 
     }
+
 
 
     private static List<Student> collectStudentsFromUser(Scanner input) {
@@ -462,6 +458,7 @@ public class Main {
                     mathClubWithMostMembers.getAdress());
         }
     }
+
     private static MathClub findMathClubWithMostMembers(List<MathClub> mathClubs){
         MathClub mathClubWithMostMembers = null;
         Integer maxNumberOfMembers = Integer.MIN_VALUE;
@@ -476,7 +473,17 @@ public class Main {
         return mathClubWithMostMembers;
     }
 
-    private static List<CompetitionResult> collectAllResultsForParticipantInCompetitions(Student participant,List<Competition> competitions){
+    private static void calculateAndPrintStudentResults(List<Student> students, List<Competition> mathCompetitions, List<MathProject> mathProjects) {
+        for (Student student : students){
+            BigDecimal overallScore = student.calculateScore(getCompetitionResultsForStudent(student, mathCompetitions),
+                    countParticipationsInProjectsForStudent(student, mathProjects));
+
+            System.out.printf("Student %s %s skupio je sveukupno %.2f bodova\n", student.getName(), student.getSurname(),
+                    overallScore);
+        }
+    }
+
+    private static List<CompetitionResult> getCompetitionResultsForStudent(Student participant, List<Competition> competitions){
         List<CompetitionResult> competitionsResults = new ArrayList<>();
         for (Competition competition: competitions){
             if (competition.hasParticipant(participant)){
@@ -487,16 +494,54 @@ public class Main {
         return competitionsResults;
     }
 
-    private static Integer collectNumberOfStudentParticipationsInProjects(Student participant, List<MathProject> projects){
+    private static Integer countParticipationsInProjectsForStudent(Student participant, List<MathProject> projects){
         int numberOfParticipations = 0;
         for (MathProject project : projects){
             if(project.hasStudentCollaborator(participant)){
                 numberOfParticipations++;
             }
+
         }
 
         return numberOfParticipations;
     }
 
+    private static List<CompetitionResult> getCompetitionResultsForMathClub(MathClub mathClub, List<Competition> competitions){
+        List <Student> mathClubStudents = mathClub.getStudents();
+        List<CompetitionResult> competitionsResults = new ArrayList<>();
+
+        for (Student student : mathClubStudents){
+            for (Competition competition: competitions){
+                if (competition.hasParticipant(student)){
+                    competitionsResults.add(competition.getCompetitionResultsForParticipant(student));
+                }
+            }
+        }
+
+
+        return competitionsResults;
+    }
+
+    private static Integer countParticipationsInProjectsForMathClub(MathClub participant, List<MathProject> projects){
+        int numberOfParticipations = 0;
+        for (MathProject project : projects){
+            if(project.hasMathCollaborator(participant)){
+                numberOfParticipations++;
+            }
+
+        }
+
+        return numberOfParticipations;
+    }
+
+    private static void calculateAndPrintMathClubResults(List<MathClub> clubs, List<Competition> mathCompetitions, List<MathProject> mathProjects) {
+        for (MathClub club : clubs){
+            BigDecimal overallScore = club.calculateScore(getCompetitionResultsForMathClub(club, mathCompetitions),
+                    countParticipationsInProjectsForMathClub(club, mathProjects));
+
+            System.out.printf("Klub %s skupio je sveukupno %.2f bodova\n", club.getName(),
+                    overallScore);
+        }
+    }
 
 }

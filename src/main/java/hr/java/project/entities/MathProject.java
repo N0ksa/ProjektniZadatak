@@ -39,5 +39,9 @@ public class MathProject extends NamedEntity {
         return false;
     }
 
+    public boolean hasMathCollaborator(MathClub mathClubToCheck){
+        return collaborators.containsKey(mathClubToCheck);
+    }
+
 
 }
