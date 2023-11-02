@@ -19,7 +19,7 @@ public enum YearOfStudy {
             "Metode matematičke fizike"));
 
 
-    Integer year;
+    private Integer year;
     private List<String> availableSubjects;
     YearOfStudy(Integer year, List <String> availableSubjects){
         this.year = year;

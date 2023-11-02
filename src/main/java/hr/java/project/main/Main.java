@@ -33,6 +33,14 @@ public class Main {
         printStudentWithLongestMembership(students);
         printMathClubWithMostMembers(mathClubs);
 
+        for (Student student : students){
+           BigDecimal overallScore = student.calculateScore(collectAllResultsForParticipantInCompetitions(student, mathCompetitions),
+                    collectNumberOfStudentParticipationsInProjects(student, mathProjects));
+
+            System.out.printf("Student %s %s skupio je sveukupno %.2f bodova\n", student.getName(), student.getSurname(),
+                    overallScore);
+        }
+
 
     }
 
@@ -90,6 +98,7 @@ public class Main {
 
     private static Map<String, Integer> collectSubjectsAndGrades(Scanner input, int yearOfStudy){
         Map <String, Integer> grades = new HashMap<>();
+
         for (int currentYear = 1; currentYear <= yearOfStudy; currentYear++){
             System.out.printf("%d. godina:\n", currentYear);
             YearOfStudy year = collectYearOfStudy(currentYear);
@@ -370,6 +379,47 @@ public class Main {
         return collaboratingStudents;
     }
 
+    private static Adress enterAdress(Scanner input) {
+        System.out.println("\tInformacije o adresi:");
+        System.out.print("\tUnesite ulicu: ");
+        String streetName = input.nextLine();
+        Adress.AdressBuilder adressBuilder = new Adress.AdressBuilder(streetName);
+
+        System.out.print("\tUnesite kućni broj: ");
+        String houseNumber = input.nextLine();
+
+        System.out.print("\tUnesite grad: ");
+        String cityName = input.nextLine();
+
+        System.out.print("\tUnesite poštanski broj: ");
+        String postalCode = enterValidPostalCode(input);
+
+
+        return adressBuilder.setHouseNumber(houseNumber)
+                .setCity(cityName)
+                .setPostalCode(postalCode)
+                .build();
+
+    }
+
+    private static String enterValidPostalCode(Scanner input){
+        Pattern pattern = Pattern.compile(VALID_POSTAL_CODE_REGEX);
+
+        Matcher matcher;
+        Boolean validPostalCode = Boolean.TRUE;
+        String postalCode;
+        do{
+            validPostalCode = Boolean.TRUE;
+            postalCode = input.nextLine();
+            matcher = pattern.matcher(postalCode);
+            if (!matcher.matches()){
+                System.out.print("\tMolim unesite poštanski broj u ispravnom formatu (samo su brojevi dopušteni): ");
+                validPostalCode = Boolean.FALSE;
+            }
+        }while(!validPostalCode);
+
+        return postalCode;
+    }
 
     private static void printStudentWithLongestMembership(List<Student> students) {
         Student studentWithLongestMembership = findStudentWithLongestMembership(students);
@@ -426,45 +476,27 @@ public class Main {
         return mathClubWithMostMembers;
     }
 
-    private static Adress enterAdress(Scanner input) {
-        System.out.println("\tInformacije o adresi:");
-        System.out.print("\tUnesite ulicu: ");
-        String streetName = input.nextLine();
-        Adress.AdressBuilder adressBuilder = new Adress.AdressBuilder(streetName);
-
-        System.out.print("\tUnesite kućni broj: ");
-        String houseNumber = input.nextLine();
-
-        System.out.print("\tUnesite grad: ");
-        String cityName = input.nextLine();
-
-        System.out.print("\tUnesite poštanski broj: ");
-        String postalCode = enterValidPostalCode(input);
-
-
-        return adressBuilder.setHouseNumber(houseNumber)
-                .setCity(cityName)
-                .setPostalCode(postalCode)
-                .build();
-
-    }
-
-    private static String enterValidPostalCode(Scanner input){
-        Pattern pattern = Pattern.compile(VALID_POSTAL_CODE_REGEX);
-
-        Matcher matcher;
-        Boolean validPostalCode = Boolean.TRUE;
-        String postalCode;
-        do{
-            validPostalCode = Boolean.TRUE;
-            postalCode = input.nextLine();
-            matcher = pattern.matcher(postalCode);
-            if (!matcher.matches()){
-                System.out.print("\tMolim unesite poštanski broj u ispravnom formatu (samo su brojevi dopušteni): ");
-                validPostalCode = Boolean.FALSE;
+    private static List<CompetitionResult> collectAllResultsForParticipantInCompetitions(Student participant,List<Competition> competitions){
+        List<CompetitionResult> competitionsResults = new ArrayList<>();
+        for (Competition competition: competitions){
+            if (competition.hasParticipant(participant)){
+                competitionsResults.add(competition.getCompetitionResultsForParticipant(participant));
             }
-        }while(!validPostalCode);
+        }
 
-        return postalCode;
+        return competitionsResults;
     }
+
+    private static Integer collectNumberOfStudentParticipationsInProjects(Student participant, List<MathProject> projects){
+        int numberOfParticipations = 0;
+        for (MathProject project : projects){
+            if(project.hasStudentCollaborator(participant)){
+                numberOfParticipations++;
+            }
+        }
+
+        return numberOfParticipations;
+    }
+
+
 }

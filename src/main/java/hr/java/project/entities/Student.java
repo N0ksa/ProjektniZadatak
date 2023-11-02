@@ -1,8 +1,11 @@
 package hr.java.project.entities;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
 import java.util.Map;
 
-public class Student extends NamedEntity{
+public class Student extends NamedEntity implements Gradable{
     private String surname;
     private String studentId;
     private String email;
@@ -70,4 +73,53 @@ public class Student extends NamedEntity{
     public void setClubMembership(ClubMembership clubMembership) {
         this.clubMembership = clubMembership;
     }
+
+
+    public BigDecimal calculateAverageGrade(){
+        int counter = 0;
+        BigDecimal sumOfGrades = new BigDecimal(0);
+
+        for (Integer grade : grades.values()){
+            if (grade == 1){
+                return BigDecimal.ONE;
+            }
+            sumOfGrades = sumOfGrades.add(BigDecimal.valueOf(grade));
+            counter++;
+        }
+
+        if (counter == 0){
+            return BigDecimal.ZERO;
+        }
+
+        return sumOfGrades.divide(BigDecimal.valueOf(counter), 2, RoundingMode.HALF_UP);
+    }
+
+    @Override
+    public BigDecimal calculateScore(List<CompetitionResult> competitionsResults, Integer numberOfCollaborations) {
+        BigDecimal averageGrade =  calculateAverageGrade();
+
+        BigDecimal averageGradeWeight = new BigDecimal(0.2);
+        BigDecimal numberOfCollaborationsWeight = new BigDecimal(0.3);
+        BigDecimal competitionResultsWeight = new BigDecimal(0.5);
+
+        BigDecimal normalizedAverageGrade = calculateAverageGrade().multiply(BigDecimal.TWO);
+        BigDecimal scoreFromAllCompetitions = collectAllScores(competitionsResults);
+
+        return scoreFromAllCompetitions.multiply(competitionResultsWeight)
+                .add(normalizedAverageGrade.multiply(averageGradeWeight))
+                .add(numberOfCollaborationsWeight.multiply(new BigDecimal(numberOfCollaborations)));
+
+
+    }
+
+    private BigDecimal collectAllScores(List <CompetitionResult> studentCompetitions){
+        BigDecimal sumOfAllScores = BigDecimal.ZERO;
+        for (CompetitionResult competition: studentCompetitions){
+            sumOfAllScores = sumOfAllScores.add(competition.score());
+        }
+
+        return sumOfAllScores;
+    }
+
+
 }

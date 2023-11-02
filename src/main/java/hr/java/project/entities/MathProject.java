@@ -28,4 +28,16 @@ public class MathProject extends NamedEntity {
     public void setCollaborators(Map<MathClub, List<Student>> collaborators) {
         this.collaborators = collaborators;
     }
+
+    public boolean hasStudentCollaborator(Student studentToCheck){
+        for (List <Student> student : collaborators.values()){
+            if (student.contains(studentToCheck)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
 }

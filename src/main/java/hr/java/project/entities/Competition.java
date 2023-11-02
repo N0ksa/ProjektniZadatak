@@ -65,9 +65,9 @@ public class Competition extends NamedEntity {
         return null;
     }
 
-    public boolean hasParticipant(Student participant){
+    public boolean hasParticipant(Student participantToCheck){
         for (CompetitionResult competition : competitionResults){
-            if (competition.participant().equals(participant)){
+            if (competition.participant().equals(participantToCheck)){
                 return true;
             }
         }
