@@ -1,6 +1,7 @@
 package hr.java.project.entities;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class ClubMembership {
     boolean isActiveMember;
@@ -37,4 +38,17 @@ public class ClubMembership {
         this.membershipID = membershipID;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClubMembership that = (ClubMembership) o;
+        return isActiveMember == that.isActiveMember && Objects.equals(joinDate, that.joinDate)
+                && Objects.equals(membershipID.toLowerCase(), that.membershipID.toLowerCase());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isActiveMember, joinDate, membershipID);
+    }
 }

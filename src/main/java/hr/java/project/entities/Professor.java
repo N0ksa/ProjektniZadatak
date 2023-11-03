@@ -1,5 +1,7 @@
 package hr.java.project.entities;
 
+import java.util.Objects;
+
 public class Professor extends NamedEntity {
     private String surname;
     private String professorId;
@@ -34,5 +36,20 @@ public class Professor extends NamedEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Professor professor = (Professor) o;
+        return Objects.equals(surname.toLowerCase(), professor.surname.toLowerCase())
+                && Objects.equals(professorId, professor.professorId)
+                && Objects.equals(email.toLowerCase(), professor.email.toLowerCase());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(surname, professorId, email);
     }
 }

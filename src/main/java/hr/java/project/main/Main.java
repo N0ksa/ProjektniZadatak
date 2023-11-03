@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import hr.java.project.exception.DuplicateStudentException;
 import hr.java.project.utility.SafeInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +48,28 @@ public class Main {
 
     private static List<Student> collectStudentsFromUser(Scanner input) {
         List<Student> students = new ArrayList<>();
+        boolean duplicateStudent = true;
+
         for (int i = 0; i < MAX_NUMBER_OF_STUDENTS; i++) {
             System.out.printf("Molimo unesite %d. studenta:\n", i + 1);
-            students.add(createStudent(input));
+
+            do{
+                duplicateStudent = true;
+                try{
+                    Student newStudent = createStudent(input, students);
+                    students.add(newStudent);
+                    duplicateStudent = false;
+                }
+                catch(DuplicateStudentException e){
+                    System.out.println("Već postoji taj student! Molim pokušajte ponovno.");
+                }
+            }while(duplicateStudent);
+
         }
         return students;
     }
 
-    private static Student createStudent (Scanner input) {
+    private static Student createStudent (Scanner input, List<Student> existingStudents) throws DuplicateStudentException{
         System.out.print("Unesi ime studenta: ");
         String studentName = input.nextLine();
 
@@ -77,12 +92,13 @@ public class Main {
         int choice;
         System.out.println("Da li je student član matematičkog kluba?");
         System.out.println("1-Da\n2-Ne");
+
         choice = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 1 && x <= 2);
+        ClubMembership clubMembership = (choice == 1) ? createClubMembership(input) : null;
+        newStudent.setClubMembership(clubMembership);
 
-        if (choice == 1) {
-
-            ClubMembership clubMembership = createClubMembership(input);
-            newStudent.setClubMembership(clubMembership);
+        if (existingStudents.contains(newStudent)){
+            throw new DuplicateStudentException("Unešen već postojeći student");
         }
 
         return newStudent;

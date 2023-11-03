@@ -3,6 +3,7 @@ package hr.java.project.entities;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.jar.Attributes;
 
 public class Competition extends NamedEntity {
@@ -85,5 +86,21 @@ public class Competition extends NamedEntity {
         }
 
         return winner;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Competition that = (Competition) o;
+        return Objects.equals(description.toLowerCase(), that.description.toLowerCase())
+                && Objects.equals(adress, that.adress)
+                && Objects.equals(timeOfCompetition, that.timeOfCompetition);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(description, adress, timeOfCompetition);
     }
 }

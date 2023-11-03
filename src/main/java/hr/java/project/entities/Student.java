@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Student extends NamedEntity implements Gradable{
     private String surname;
@@ -120,5 +121,21 @@ public class Student extends NamedEntity implements Gradable{
         return sumOfAllScores;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student student = (Student) o;
+        return Objects.equals(surname.toLowerCase(), student.surname.toLowerCase())
+                && Objects.equals(studentId, student.studentId)
+                && Objects.equals(email.toLowerCase(), student.email.toLowerCase())
+                && Objects.equals(yearOfStudy, student.yearOfStudy)
+                && Objects.equals(grades, student.grades)
+                && Objects.equals(clubMembership, student.clubMembership);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(surname, studentId, email, yearOfStudy, grades, clubMembership);
+    }
 }

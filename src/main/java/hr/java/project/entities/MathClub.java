@@ -2,6 +2,7 @@ package hr.java.project.entities;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 public class MathClub extends NamedEntity implements Gradable {
     private Adress adress;
@@ -60,5 +61,16 @@ public class MathClub extends NamedEntity implements Gradable {
         return sumOfAllScores;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MathClub mathClub = (MathClub) o;
+        return Objects.equals(adress, mathClub.adress) && Objects.equals(students, mathClub.students);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(adress, students);
+    }
 }

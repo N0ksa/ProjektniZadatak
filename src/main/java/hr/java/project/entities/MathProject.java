@@ -2,6 +2,7 @@ package hr.java.project.entities;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class MathProject extends NamedEntity {
     private String description;
@@ -43,5 +44,17 @@ public class MathProject extends NamedEntity {
         return collaborators.containsKey(mathClubToCheck);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MathProject that = (MathProject) o;
+        return Objects.equals(description.toLowerCase(), that.description.toLowerCase())
+                && Objects.equals(collaborators, that.collaborators);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(description, collaborators);
+    }
 }
