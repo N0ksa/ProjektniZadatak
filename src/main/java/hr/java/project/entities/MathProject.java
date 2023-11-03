@@ -4,10 +4,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Predstavlja matematički projekt.
+ */
+
 public class MathProject extends NamedEntity {
     private String description;
     private Map<MathClub, List<Student>> collaborators;
 
+    /**
+     * Konstruktor za stvaranje nove instance matematičkog projekta.
+     * @param name Naziv matematičkog projekta.
+     * @param description Opis projekta.
+     * @param collaborators Mapa koja povezuje matematičke klubove s njihovim članovima koji sudjeluju u projektu.
+     */
     public MathProject(String name, String description, Map<MathClub, List<Student>> collaborators) {
         super(name);
         this.description = description;
@@ -30,6 +40,12 @@ public class MathProject extends NamedEntity {
         this.collaborators = collaborators;
     }
 
+
+    /**
+     * Provjerava da li određeni student sudjeluje u projektu.
+     * @param studentToCheck Student koji se provjerava da li sudjeluje u projektu.
+     * @return <code>true</code> ako je student sudionik projekta, inače <code>false</code>.
+     */
     public boolean hasStudentCollaborator(Student studentToCheck){
         for (List <Student> student : collaborators.values()){
             if (student.contains(studentToCheck)){
@@ -40,6 +56,11 @@ public class MathProject extends NamedEntity {
         return false;
     }
 
+    /**
+     * Provjerava da li određeni matematički klub sudjeluje u projektu.
+     * @param mathClubToCheck Matematički klub koji se provjerava da li sudjeluje u projektu.
+     * @return <code>true</code> ako je student sudionik projekta, inače <code>false</code>.
+     */
     public boolean hasMathCollaborator(MathClub mathClubToCheck){
         return collaborators.containsKey(mathClubToCheck);
     }
@@ -48,6 +69,7 @@ public class MathProject extends NamedEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         MathProject that = (MathProject) o;
         return Objects.equals(description.toLowerCase(), that.description.toLowerCase())
                 && Objects.equals(collaborators, that.collaborators);
@@ -55,6 +77,6 @@ public class MathProject extends NamedEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(description, collaborators);
+        return Objects.hash(super.hashCode(), description, collaborators);
     }
 }

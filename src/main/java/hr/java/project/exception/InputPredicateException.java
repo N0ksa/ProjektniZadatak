@@ -1,5 +1,8 @@
 package hr.java.project.exception;
 
+/**
+ * Baci se kada upis iz komandne linije ne odgovara zadanom rasponu.
+ */
 public class InputPredicateException extends RuntimeException {
     public InputPredicateException() {
     }

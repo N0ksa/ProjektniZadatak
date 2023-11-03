@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.jar.Attributes;
 
+/**
+ * Predstavlja matematičko natjecanje.
+ */
 public class Competition extends NamedEntity {
 
     private String description;
@@ -13,6 +15,14 @@ public class Competition extends NamedEntity {
     private LocalDateTime timeOfCompetition;
     private List <CompetitionResult> competitionResults;
 
+    /**
+     * Konstruktor za stvaranje nove instance matematičkog natjecanja.
+     * @param name Naziv natjecanja.
+     * @param description Opis natjecanja.
+     * @param adress Adresa održavanja natjecanja.
+     * @param timeOfCompetition Vrijeme održavanja natjecanja.
+     * @param competitionResults Rezultati natjecatelja.
+     */
     public Competition(String name, String description, Adress adress, LocalDateTime timeOfCompetition,
                        List<CompetitionResult> competitionResults) {
         super(name);
@@ -56,7 +66,12 @@ public class Competition extends NamedEntity {
     }
 
 
-    public CompetitionResult getCompetitionResultsForParticipant(Student participant){
+    /**
+     * Dohvaća rezultat natjecanja za određenog sudionika.
+     * @param participant Student za kojeg se dohvaća rezultat natjecanja.
+     * @return CompetitionResult - rezultat natjecanja za sudionika,  <code>null</code> ako sudionik nije pronađen.
+     */
+    public CompetitionResult getCompetitionResultForParticipant(Student participant){
         for (CompetitionResult competition: competitionResults){
             if (competition.participant().equals(participant)){
                 return competition;
@@ -66,6 +81,11 @@ public class Competition extends NamedEntity {
         return null;
     }
 
+    /**
+     * Provjerava je li određeni student sudionik ovog natjecanja.
+     * @param participantToCheck Student za provjeru sudjelovanja.
+     * @return <code>true</code> ako je student sudionik ovog natjecanja, inače <code>false</code>.
+     */
     public boolean hasParticipant(Student participantToCheck){
         for (CompetitionResult competition : competitionResults){
             if (competition.participant().equals(participantToCheck)){
@@ -75,6 +95,10 @@ public class Competition extends NamedEntity {
         return false;
     }
 
+    /**
+     * Vraća pobjednika natjecanja.
+     * @return Student - pobjednik natjecanja.
+     */
     public Student findWinner(){
         Student winner = null;
         BigDecimal winnerScore = null;
@@ -93,6 +117,7 @@ public class Competition extends NamedEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         Competition that = (Competition) o;
         return Objects.equals(description.toLowerCase(), that.description.toLowerCase())
                 && Objects.equals(adress, that.adress)
@@ -101,6 +126,6 @@ public class Competition extends NamedEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(description, adress, timeOfCompetition);
+        return Objects.hash(super.hashCode(), description, adress, timeOfCompetition, competitionResults);
     }
 }

@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Predstavlja studenta.
+ * Implementira sučelje {@link Gradable}, što znači da se može ocjenjivati.
+ */
 public class Student extends NamedEntity implements Gradable{
     private String surname;
     private String studentId;
@@ -15,6 +19,16 @@ public class Student extends NamedEntity implements Gradable{
 
     private ClubMembership clubMembership;
 
+
+    /**
+     * Konstruktor za stvaranje objekta razreda "Student".
+     * @param name Ime studenta.
+     * @param surname Prezime studenta.
+     * @param studentId Identifikacijski broj studenta.
+     * @param email Adresa elektroničke pošte studenta.
+     * @param yearOfStudy Trenutna godina studija studenta.
+     * @param grades Mapa koja sadrži ocjene studenta.
+     */
     public Student(String name, String surname, String studentId, String email, Integer yearOfStudy, Map<String,
             Integer> grades) {
         super(name);
@@ -76,6 +90,10 @@ public class Student extends NamedEntity implements Gradable{
     }
 
 
+    /**
+     * Izračunava prosječnu ocjenu studenta.
+     * @return BigDecimal - Prosječna ocjena studenta, ako student nema ocjena vraća se nula.
+     */
     public BigDecimal calculateAverageGrade(){
         int counter = 0;
         BigDecimal sumOfGrades = new BigDecimal(0);
@@ -103,7 +121,7 @@ public class Student extends NamedEntity implements Gradable{
         BigDecimal competitionResultsWeight = new BigDecimal(0.5);
 
         BigDecimal normalizedAverageGrade = calculateAverageGrade().multiply(BigDecimal.TWO);
-        BigDecimal scoreFromAllCompetitions = collectAllScoresFromCompetitions(competitionsResults);
+        BigDecimal scoreFromAllCompetitions = calculateTotalCompetitionScores(competitionsResults);
 
         return scoreFromAllCompetitions.multiply(competitionResultsWeight)
                 .add(normalizedAverageGrade.multiply(averageGradeWeight))
@@ -112,7 +130,12 @@ public class Student extends NamedEntity implements Gradable{
 
     }
 
-    private BigDecimal collectAllScoresFromCompetitions(List <CompetitionResult> studentCompetitions){
+    /**
+     * Zbraja sve bodove koje je student osvojio na svim natjecanjima.
+     * @param studentCompetitions Lista rezultata svih natjecanja u kojima je student sudjelovao.
+     * @return BigDecimal - ukupan broj bodova osvojenih na natjecanjima.
+     */
+    private BigDecimal calculateTotalCompetitionScores(List <CompetitionResult> studentCompetitions){
         BigDecimal sumOfAllScores = BigDecimal.ZERO;
         for (CompetitionResult competition: studentCompetitions){
             sumOfAllScores = sumOfAllScores.add(competition.score());
@@ -125,13 +148,9 @@ public class Student extends NamedEntity implements Gradable{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         Student student = (Student) o;
-        return Objects.equals(surname.toLowerCase(), student.surname.toLowerCase())
-                && Objects.equals(studentId, student.studentId)
-                && Objects.equals(email.toLowerCase(), student.email.toLowerCase())
-                && Objects.equals(yearOfStudy, student.yearOfStudy)
-                && Objects.equals(grades, student.grades)
-                && Objects.equals(clubMembership, student.clubMembership);
+        return Objects.equals(surname, student.surname) && Objects.equals(studentId, student.studentId);
     }
 
     @Override

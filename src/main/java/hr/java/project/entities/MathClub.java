@@ -4,22 +4,32 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Predstavlja matematički klub.
+ * Implementira sučelje {@link Gradable}, što znači da se može ocjenjivati.
+ */
 public class MathClub extends NamedEntity implements Gradable {
-    private Adress adress;
+    private Adress address;
     private List<Student> students;
 
-    public MathClub(String name, Adress adress, List<Student> students) {
+    /**
+     * Konstruktor za stvaranje objekta razreda "MathClub".
+     * @param name Naziv matematičkog kluba.
+     * @param address Adresa kluba.
+     * @param students Lista studenata koji su članovi kluba.
+     */
+    public MathClub(String name, Adress address, List<Student> students) {
         super(name);
-        this.adress = adress;
+        this.address = address;
         this.students = students;
     }
 
-    public Adress getAdress() {
-        return adress;
+    public Adress getAddress() {
+        return address;
     }
 
-    public void setAdress(Adress adress) {
-        this.adress = adress;
+    public void setAddress(Adress address) {
+        this.address = address;
     }
 
     public List<Student> getStudents() {
@@ -48,10 +58,12 @@ public class MathClub extends NamedEntity implements Gradable {
 
     }
 
-    public Integer getNumberOfMembers (){
-        return students.size();
-    }
 
+    /**
+     * Služi za zbrajanje svih bodova koje su članovi matematičkog kluba ostvarili na svim natjecanjima.
+     * @param studentsCompetitions Lista rezultata natjecanja u kojima su članovi kluba sudjelovali.
+     * @return BigDecimal - ukupan broj bodova matematičkog kluba ostvarenih na natjecanjima.
+     */
     private BigDecimal collectAllScoresFromCompetitions(List <CompetitionResult> studentsCompetitions){
         BigDecimal sumOfAllScores = BigDecimal.ZERO;
         for (CompetitionResult competition: studentsCompetitions){
@@ -61,16 +73,25 @@ public class MathClub extends NamedEntity implements Gradable {
         return sumOfAllScores;
     }
 
+    /**
+     * Služi da dobivanje broja članova.
+     * @return Integer - broj članova matematičkog kluba.
+     */
+    public Integer getNumberOfMembers (){
+        return students.size();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         MathClub mathClub = (MathClub) o;
-        return Objects.equals(adress, mathClub.adress) && Objects.equals(students, mathClub.students);
+        return Objects.equals(address, mathClub.address) && Objects.equals(students, mathClub.students);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(adress, students);
+        return Objects.hash(super.hashCode(), address, students);
     }
 }

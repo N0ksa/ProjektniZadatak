@@ -1,5 +1,8 @@
 package hr.java.project.exception;
 
+/**
+ * Baci se kada postoji duplicirani student.
+ */
 public class DuplicateStudentException extends RuntimeException {
     public DuplicateStudentException() {
     }

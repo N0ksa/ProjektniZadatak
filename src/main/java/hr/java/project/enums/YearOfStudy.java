@@ -3,6 +3,9 @@ package hr.java.project.enums;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Predstavlja različite godine studija sa popisom predmeta koji se pohađaju u svakoj godini.
+ */
 public enum YearOfStudy {
     FIRST_YEAR(1, Arrays.asList("Elementarna matematika 1", "Linearna algebra 1",
                                     "Matematička analiza 1", "Programiranje 1",
@@ -21,7 +24,9 @@ public enum YearOfStudy {
 
     private Integer year;
     private List<String> availableSubjects;
-    YearOfStudy(Integer year, List <String> availableSubjects){
+
+
+     YearOfStudy(Integer year, List <String> availableSubjects){
         this.year = year;
         this.availableSubjects = availableSubjects;
     }

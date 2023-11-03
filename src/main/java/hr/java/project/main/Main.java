@@ -6,16 +6,16 @@ import hr.java.project.enums.YearOfStudy;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import hr.java.project.exception.DuplicateStudentException;
+import hr.java.project.exception.*;
 import hr.java.project.utility.SafeInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Glavna klasa s metodom main i pomoćnim metodama.
+ */
 public class Main {
 
     private static final Integer MAX_NUMBER_OF_STUDENTS = 3;
@@ -26,14 +26,18 @@ public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main. class);
 
+    /**
+     *Početak programa.
+     * @param args Argumenti iz komandne linije.
+     */
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
 
-        List<Student> students = collectStudentsFromUser(input);
-        List<Professor> professors = collectProfessorsFromUser(input);
-        List<MathClub> mathClubs = collectMathClubsFromUser(input, students);
-        List <MathProject> mathProjects = collectMathProjectsFromUser(input, mathClubs);
-        List<Competition> mathCompetitions  = collectMathCompetitionsFromUser(input, students);
+        List<Student> students = collectAndValidateStudentsFromUser(input);
+        List<Professor> professors = collectAndValidateProfessorsFromUser(input);
+        List<MathClub> mathClubs = collectAndValidateMathClubsFromUser(input, students);
+        List <MathProject> mathProjects = collectAndValidateMathProjectsFromUser(input, mathClubs);
+        List<Competition> mathCompetitions  = collectAndValidateMathCompetitionsFromUser(input, students);
 
         printStudentWithLongestMembership(students);
         printMathClubWithMostMembers(mathClubs);
@@ -45,8 +49,12 @@ public class Main {
     }
 
 
-
-    private static List<Student> collectStudentsFromUser(Scanner input) {
+    /**
+     *Učitava nove studente od korisnika i provjerava njihovu jedinstvenost.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @return List - lista studenata koji su uneseni i validirani.
+     */
+    private static List<Student> collectAndValidateStudentsFromUser(Scanner input) {
         List<Student> students = new ArrayList<>();
         boolean duplicateStudent = true;
 
@@ -55,6 +63,7 @@ public class Main {
 
             do{
                 duplicateStudent = true;
+
                 try{
                     Student newStudent = createStudent(input, students);
                     students.add(newStudent);
@@ -62,6 +71,7 @@ public class Main {
                 }
                 catch(DuplicateStudentException e){
                     System.out.println("Već postoji taj student! Molim pokušajte ponovno.");
+                    logger.info(e.getMessage(), e);
                 }
             }while(duplicateStudent);
 
@@ -69,6 +79,13 @@ public class Main {
         return students;
     }
 
+    /**
+     *Služi za kreiranje novog studenta na temelju korisnikovog unosa.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @param existingStudents Lista studenata prema kojima se određuje da li je uneseni student duplikat.
+     * @return Student -nova instanca studenta.
+     * @throws DuplicateStudentException Baca iznimku ako je uneseni student duplikat već unesenog studenta.
+     */
     private static Student createStudent (Scanner input, List<Student> existingStudents) throws DuplicateStudentException{
         System.out.print("Unesi ime studenta: ");
         String studentName = input.nextLine();
@@ -89,21 +106,26 @@ public class Main {
 
         Student newStudent = new Student(studentName, studentSurname, studentID, studentEmail, yearOfStudy, grades);
 
-        int choice;
         System.out.println("Da li je student član matematičkog kluba?");
         System.out.println("1-Da\n2-Ne");
 
-        choice = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 1 && x <= 2);
+        int choice = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 1 && x <= 2);
         ClubMembership clubMembership = (choice == 1) ? createClubMembership(input) : null;
         newStudent.setClubMembership(clubMembership);
 
         if (existingStudents.contains(newStudent)){
-            throw new DuplicateStudentException("Unešen već postojeći student");
+            throw new DuplicateStudentException("Unesen već postojeći student");
         }
 
         return newStudent;
     }
 
+    /**
+     * Služi za prikupljanje studentovih ocjena, u ovisnosti o njegovoj godini studija.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @param yearOfStudy Godina studija.
+     * @return Map - sadrži predmete i njihove ocjene.
+     */
     private static Map<String, Integer> collectSubjectsAndGrades(Scanner input, int yearOfStudy){
         Map <String, Integer> grades = new HashMap<>();
 
@@ -126,6 +148,11 @@ public class Main {
         return grades;
     }
 
+    /**
+     *Služi za dohvaćanje objekta godine studija na temelju broja godine.
+     * @param yearOfStudy Godina studija koja se želi dohvatiti.
+     * @return YearOfStudy - u slučaju kada postoji navedena godina, inače <code>null</code>
+     */
     private static YearOfStudy collectYearOfStudy(int yearOfStudy){
         for (YearOfStudy year : YearOfStudy.values()){
             if (year.getYear() == yearOfStudy){
@@ -135,6 +162,12 @@ public class Main {
         return null;
     }
 
+
+    /**
+     * Služi za kreiranje klubskog članstva.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @return ClubMembership - klubsko članstvo.
+     */
     private static ClubMembership createClubMembership(Scanner input) {
         System.out.println("Upišite datum učlanjivanja (dd.MM.yyyy.): ");
         LocalDate joinDate = SafeInput.secureCorrectLocalDate(input);
@@ -145,16 +178,48 @@ public class Main {
         return new ClubMembership(joinDate, membershipId);
     }
 
-    private static List<Professor> collectProfessorsFromUser (Scanner input) {
+
+    /**
+     *Učitava nove profesore od korisnika i provjerava njihovu jedinstvenost.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @return List - lista profesora koji su uneseni i validirani.
+     */
+    private static List<Professor> collectAndValidateProfessorsFromUser(Scanner input) {
         List<Professor> professors = new ArrayList<>();
+        boolean duplicateProfessor = true;
+
         for (int i = 0; i < MAX_NUMBER_OF_PROFESSORS; i++) {
             System.out.printf("Molimo unesite %d. profesora:\n", i + 1);
-            professors.add(createProfessor(input));
+
+            do{
+                duplicateProfessor = true;
+
+                try{
+                    Professor newProfessor = createProfessor(input, professors);
+                    professors.add(newProfessor);
+                    duplicateProfessor = false;
+                }
+                catch (DuplicateProfessorException e){
+                    System.out.println("Već postoji taj profesor! Molim pokušajte ponovno.");
+                    logger.info(e.getMessage(), e);
+                }
+
+            }while(duplicateProfessor);
         }
         return professors;
     }
 
-    private static Professor createProfessor(Scanner input){
+
+    /**
+     * Služi za kreiranje novog profesora na temelju korisnikovog unosa.
+     * @param input  Scanner objekt kojim se učitavaju podaci.
+     * @param existingProfessors Lista profesora prema kojima se određuje da li je uneseni profesor duplikat.
+     * @return nova instanca profesora.
+     * @throws DuplicateProfessorException Baca iznimku ako je uneseni profesor duplikat već unesenog profesora.
+     */
+    private static Professor createProfessor(Scanner input, List <Professor> existingProfessors)
+            throws DuplicateProfessorException {
+
         System.out.print("Unesi ime profesora: ");
         String professorName = input.nextLine();
 
@@ -167,21 +232,60 @@ public class Main {
         System.out.print("Unesi email profesora: ");
         String professorEmail = SafeInput.enterValidWebAdress(input);
 
-        return new Professor(professorName, professorSurname, professorId, professorEmail);
+        Professor newProfessor = new Professor(professorName, professorSurname, professorId, professorEmail);
+
+        if (existingProfessors.contains(newProfessor)){
+            throw new DuplicateProfessorException("Unesen već postojeći profesor");
+        }
+
+        return newProfessor;
+
 
     }
 
 
-    private static List<MathClub> collectMathClubsFromUser(Scanner input, List<Student> students) {
+    /**
+     *Učitava nove matematičke klubove od korisnika i provjerava njihovu jedinstvenost.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @param students Lista studenata iz koje se biraju članovi matematičkog kluba.
+     * @return List - lista matematičkih klubova koji su uneseni i validirani.
+     */
+    private static List<MathClub> collectAndValidateMathClubsFromUser(Scanner input, List<Student> students) {
         List<MathClub> mathClubs = new ArrayList<>();
+        boolean duplicateMathClub = true;
+
         for (int i = 0; i < MAX_NUMBER_OF_MATH_CLUBS; i++) {
             System.out.printf("Molimo unesite %d. matematički klub:\n", i + 1);
-            mathClubs.add(createMathClub(input, students));
+            do {
+                duplicateMathClub = true;
+                try{
+                    MathClub newMathClub = createMathClub(input, students, mathClubs);
+                    mathClubs.add(newMathClub);
+                    duplicateMathClub = false;
+                }
+                catch (DuplicateMathClubException e){
+                    System.out.println("Već postoji taj matematički klub! Molim pokušajte ponovno.");
+                    logger.info(e.getMessage(), e);
+                }
+
+            }while(duplicateMathClub);
+
+            mathClubs.add(createMathClub(input, students, mathClubs));
         }
         return mathClubs;
     }
 
-    private static MathClub createMathClub(Scanner input, List<Student> students){
+
+    /**
+     * Služi za kreiranje novog matematičkog kluba na temelju korisnikovog unosa.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @param students Lista studenata iz koje se biraju članovi matematičkog kluba.
+     * @param existingMathClubs Lista matematičkih klubova prema kojima se određuje da li je uneseni klub duplikat.
+     * @return MathClub - novi matematički klub
+     * @throws DuplicateMathClubException Baca iznimku ako je uneseni matematički klub duplikat već unesenog kluba.
+     */
+    private static MathClub createMathClub(Scanner input, List<Student> students, List<MathClub> existingMathClubs)
+    throws DuplicateMathClubException{
         System.out.print("Upišite ime kluba: ");
         String clubName = input.nextLine();
 
@@ -190,20 +294,56 @@ public class Main {
 
         List<Student> selectedStudents = selectStudents(input, students);
 
-        return new MathClub(clubName, adress, selectedStudents);
+
+        MathClub newMathClub = new MathClub(clubName, adress, selectedStudents);
+
+        if(existingMathClubs.contains(newMathClub)){
+            throw new DuplicateMathClubException("Unesen već postojeći matematički klub");
+        }
+
+        return newMathClub;
 
     }
 
-    private static List<Competition> collectMathCompetitionsFromUser(Scanner input, List<Student> students) {
+    /**
+     * Učitava nova matematička natjecanja od korisnika i provjerava njihovu jedinstvenost.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @param students Lista studenata iz koje se biraju sudionici natjecanja.
+     * @return List - lista matematičkih natjecanja koja su unešena i validirana.
+     */
+
+    private static List<Competition> collectAndValidateMathCompetitionsFromUser(Scanner input, List<Student> students) {
         List<Competition> mathCompetitions = new ArrayList<>();
+        boolean duplicateMathCompetition = true;
+
         for (int i = 0; i < MAX_NUMBER_OF_MATH_COMPETITIONS; i++) {
             System.out.printf("Molimo unesite %d. matematičko natjecanje:\n", i + 1);
-            mathCompetitions.add(createMathCompetition(input, students));
+            do {
+                duplicateMathCompetition = true;
+                try{
+                    Competition newMathCompetition = createMathCompetition(input, students, mathCompetitions);
+                    duplicateMathCompetition = false;
+                }
+                catch(DuplicateMathCompetitionException e){
+                    System.out.println("Uneseno već postojeće matematičko natjecanje! Molimo pokušajte ponovno.");
+                    logger.info(e.getMessage(), e);
+                }
+            }while(duplicateMathCompetition);
         }
         return mathCompetitions;
     }
 
-    private static Competition createMathCompetition(Scanner input, List<Student> students) {
+    /**
+     * Služi za kreiranje novog matematičkog natjecanja na temelju korisnikovog unosa.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @param students Lista studenata iz koje se biraju sudionici natjecanja.
+     * @param existingCompetitions Lista matematičkih natjecanja prema kojima se određuje da li je uneseno natjecanje duplikat.
+     * @return Competition - novo matematičko natjecanje.
+     * @throws DuplicateMathCompetitionException Baca iznimku ako je uneseno matematičko natjecanje duplikat već unesenog natjecanja.
+     */
+    private static Competition createMathCompetition(Scanner input, List<Student> students, List<Competition> existingCompetitions)
+            throws  DuplicateMathCompetitionException {
+
         System.out.print("Upišite ime natjecanja: ");
         String competitionName = input.nextLine();
 
@@ -218,9 +358,23 @@ public class Main {
 
         List<CompetitionResult> competitionResults = selectCompetitionResults(input, students);
 
-        return new Competition(competitionName, competitionDescription, competitionAdress, timeOfCompetition, competitionResults);
+        Competition newMathCompetition = new Competition(competitionName, competitionDescription, competitionAdress,
+                timeOfCompetition, competitionResults);
+
+        if (existingCompetitions.contains(newMathCompetition)){
+            throw new DuplicateMathCompetitionException("Uneseno već postojeće matematičko natjecanje");
+        }
+
+        return newMathCompetition;
     }
 
+
+    /**
+     * Omogućuje odabir studenata za natjecanje i unos njihovih rezultata.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @param students Lista studenata iz koje se biraju sudionici natjecanja.
+     * @return List - lista rezultata natjecanja.
+     */
     private static List<CompetitionResult> selectCompetitionResults(Scanner input, List<Student> students) {
         List<CompetitionResult> competitionResults = new ArrayList<>();
 
@@ -261,6 +415,12 @@ public class Main {
         return competitionResults;
     }
 
+    /**
+     *Služi za odabir studenata.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @param students Lista studenata koje je moguće odabrati.
+     * @return List - lista odabranih studenata.
+     */
     private static List<Student> selectStudents(Scanner input, List<Student> students) {
         List<Student> unselectedStudents = new ArrayList<>(students);
         List<Student> selectedStudents = new ArrayList<>();
@@ -291,17 +451,48 @@ public class Main {
         return selectedStudents;
     }
 
-    private static List<MathProject> collectMathProjectsFromUser(Scanner input, List<MathClub> mathClubs) {
+    /**
+     * Učitava nove matematičke projekte od korisnika i provjerava njihovu jedinstvenost.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @param mathClubs  Lista matematičkih klubova prema kojoj se biraju sudionici u projektu.
+     * @return List - lista matematičkih projekata koji su unešeni i validirani.
+     */
+    private static List<MathProject> collectAndValidateMathProjectsFromUser(Scanner input, List<MathClub> mathClubs) {
         List<MathProject> mathProjects = new ArrayList<>();
+        boolean duplicateMathProject = true;
+
         for (int i = 0; i < MAX_NUMBER_OF_MATH_PROJECTS; i++) {
             System.out.printf("Molimo unesite %d. projekt\n", i + 1);
-            mathProjects.add(createProject(input, mathClubs));
+
+            do {
+                duplicateMathProject = true;
+
+                try{
+                    MathProject newMathProject = createProject(input, mathClubs, mathProjects);
+                    duplicateMathProject = false;
+                }
+                catch(DuplicateMathProjectException e){
+                    System.out.println("Unesen već postojeći matematički projekt! Molim pokušajte ponovno.");
+                    logger.info(e.getMessage(), e);
+                }
+
+            }while(duplicateMathProject);
         }
         return mathProjects;
     }
 
+    /**
+     * Služi za kreiranje novog matematičkog projekta na temelju korisnikovog unosa.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @param mathClubs Lista matematičkih klubova prema kojoj se biraju sudionici u projektu.
+     * @param existingMathProjects Lista matematičkih projekata prema kojima se određuje da li je uneseni projekt duplikat.
+     * @return MathProject - novi matematički projekt.
+     * @throws DuplicateMathProjectException Baca iznimku ako je uneseni matematički projekt duplikat već unesenog projekta.
+     */
 
-    private static MathProject createProject(Scanner input, List<MathClub> mathClubs) {
+    private static MathProject createProject(Scanner input, List<MathClub> mathClubs, List<MathProject> existingMathProjects)
+    throws DuplicateMathProjectException{
+
         System.out.print("Unesite ime projekta: ");
         String projectName = input.nextLine();
 
@@ -312,11 +503,22 @@ public class Main {
 
         Map<MathClub, List <Student>> collaborators = selectCollaborators(input, mathClubs);
 
-        return new MathProject(projectName, projectDescription, collaborators);
+        MathProject newMathProject = new MathProject(projectName, projectDescription, collaborators);
+
+        if (existingMathProjects.contains(newMathProject)){
+            throw new DuplicateMathProjectException("Unesen već postojeći matematički klub");
+        }
+
+        return newMathProject;
     }
 
 
-
+    /**
+     * Služi za odabir sudionika u matematičkom projektu.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @param mathClubs Lista matematičkih klubova prema kojoj se biraju sudionici u projektu.
+     * @return Map - mapa koja sadrži odabrane klubove i njihove studente koji su sudjelovali u projektu.
+     */
     private static Map<MathClub, List<Student>> selectCollaborators(Scanner input, List<MathClub> mathClubs) {
         Map<MathClub, List<Student>> collaborators = new HashMap<>();
         List<MathClub> unselectedClubs = new ArrayList<>(mathClubs);
@@ -347,6 +549,13 @@ public class Main {
 
         return collaborators;
     }
+
+    /**
+     * Služi za odabir studenata matematičkog kluba koji su sudjelovali na projektu.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @param mathClub Matematički klub koji sudjeluje u projektu.
+     * @return List - lista studenata matematičkog kluba koji sudjeluju u projektu.
+     */
 
     private static List<Student> selectCollaboratingStudents(Scanner input, MathClub mathClub) {
         List<Student> collaboratingStudents = new ArrayList<>();
@@ -379,6 +588,11 @@ public class Main {
         return collaboratingStudents;
     }
 
+    /**
+     *Služi za unost ispravne adrese od strane korisnika.
+     * @param input Scanner objekt kojim se učitavaju podaci.
+     * @return Adress - nova adresa.
+     */
     private static Adress enterAdress(Scanner input) {
         System.out.println("\tInformacije o adresi:");
         System.out.print("\tUnesite ulicu: ");
@@ -402,6 +616,11 @@ public class Main {
 
     }
 
+
+    /**
+     *Ispisuje studenta koji ima najduže članstvo u matematičkom klubu.
+     * @param students Lista studenata prema kojoj se odabire student s najdužim članstvom.
+     */
     private static void printStudentWithLongestMembership(List<Student> students) {
         Student studentWithLongestMembership = findStudentWithLongestMembership(students);
         if (studentWithLongestMembership != null) {
@@ -415,6 +634,11 @@ public class Main {
         }
     }
 
+    /**
+     * Služi za pronalazak studenta koji ima najduže članstvo u matematičkom klubu.
+     * @param students Lista studenata prema kojoj se odabire student s najdužim članstvom.
+     * @return Student - student s najdužim članstvom.
+     */
     private static Student findStudentWithLongestMembership(List<Student> students) {
         LocalDate longestJoinDate = null;
         Student studentWithLongestMembership = null;
@@ -435,15 +659,25 @@ public class Main {
         return studentWithLongestMembership;
     }
 
+    /**
+     * Ispisuje matematički klub s najviše članova.
+     * @param mathClubs Lista matematičkih klubova prema kojoj se odabire matematički klub s najviše studenata.
+     */
+
     private static void printMathClubWithMostMembers(List<MathClub> mathClubs){
         MathClub mathClubWithMostMembers = findMathClubWithMostMembers(mathClubs);
         if (mathClubWithMostMembers != null){
             System.out.println("Studentski klub koji ima najviše članova je:");
             System.out.printf("%s %s\n", mathClubWithMostMembers.getName(),
-                    mathClubWithMostMembers.getAdress());
+                    mathClubWithMostMembers.getAddress());
         }
     }
 
+    /**
+     * Služi za pronalazak matematičkog kluba s najviše članova.
+     * @param mathClubs Lista matematičkih klubova prema kojoj se odabire matematički klub s najviše studenata.
+     * @return MathClub - matematički klub s najviše studenata.
+     */
     private static MathClub findMathClubWithMostMembers(List<MathClub> mathClubs){
         MathClub mathClubWithMostMembers = null;
         Integer maxNumberOfMembers = Integer.MIN_VALUE;
@@ -458,6 +692,12 @@ public class Main {
         return mathClubWithMostMembers;
     }
 
+    /**
+     * Izračunava i ispisuje sveukupne rezultate svih studenata.
+     * @param students Lista studenata.
+     * @param mathCompetitions Lista matematičkih natjecanja.
+     * @param mathProjects  Lista matematičkih projekata.
+     */
     private static void calculateAndPrintStudentResults(List<Student> students, List<Competition> mathCompetitions, List<MathProject> mathProjects) {
         for (Student student : students){
             BigDecimal overallScore = student.calculateScore(getCompetitionResultsForStudent(student, mathCompetitions),
@@ -468,17 +708,30 @@ public class Main {
         }
     }
 
+
+    /**
+     * Služi za dobivanje liste svih rezultata matematičkih natjecanja na kojemu je student sudjelovao.
+     * @param participant Student za kojeg se želi dobiti lista svih rezultata svih natjecanja.
+     * @param competitions Lista svih matematičkih natjecanja.
+     * @return List - lista svih rezultata matematičkih natjecanja na kojima je student sudjelovao.
+     */
     private static List<CompetitionResult> getCompetitionResultsForStudent(Student participant, List<Competition> competitions){
         List<CompetitionResult> competitionsResults = new ArrayList<>();
         for (Competition competition: competitions){
             if (competition.hasParticipant(participant)){
-                competitionsResults.add(competition.getCompetitionResultsForParticipant(participant));
+                competitionsResults.add(competition.getCompetitionResultForParticipant(participant));
             }
         }
 
         return competitionsResults;
     }
 
+    /**
+     * Služi za izračun broja sudjelovanja studenta na matematičkim projektima.
+     * @param participant Student za kojeg se želi dobiti broj sudjelovanja na matematičkim projektima.
+     * @param projects Lista svih matematičkih projekata.
+     * @return Integer - broj sudjelovanja studenta na matematičkim projektima.
+     */
     private static Integer countParticipationsInProjectsForStudent(Student participant, List<MathProject> projects){
         int numberOfParticipations = 0;
         for (MathProject project : projects){
@@ -491,6 +744,13 @@ public class Main {
         return numberOfParticipations;
     }
 
+
+    /**
+     * Služi za dobivanje liste svih rezultata matematičkih natjecanja za sve članove matematičkog kluba.
+     * @param mathClub Matematički klub za koji se želi dobiti lista svih rezultata svih natjecanja.
+     * @param competitions Lista svih matematičkih natjecanja.
+     * @return List - lista svih rezultata matematičkih natjecanja za sve članove matematičkog kluba.
+     */
     private static List<CompetitionResult> getCompetitionResultsForMathClub(MathClub mathClub, List<Competition> competitions){
         List <Student> mathClubStudents = mathClub.getStudents();
         List<CompetitionResult> competitionsResults = new ArrayList<>();
@@ -498,7 +758,7 @@ public class Main {
         for (Student student : mathClubStudents){
             for (Competition competition: competitions){
                 if (competition.hasParticipant(student)){
-                    competitionsResults.add(competition.getCompetitionResultsForParticipant(student));
+                    competitionsResults.add(competition.getCompetitionResultForParticipant(student));
                 }
             }
         }
@@ -507,6 +767,13 @@ public class Main {
         return competitionsResults;
     }
 
+
+    /**
+     * Služi za izračun broja sudjelovanja matematičkog kluba na matematičkim projektima.
+     * @param participant Matematički klub za kojeg se želi dobiti broj sudjelovanja na matematičkim projektima.
+     * @param projects Lista svih matematičkih projekata.
+     * @return Integer - broj sudjelovanja matematičkog kluba na matematičkim projektima.
+     */
     private static Integer countParticipationsInProjectsForMathClub(MathClub participant, List<MathProject> projects){
         int numberOfParticipations = 0;
         for (MathProject project : projects){
@@ -518,6 +785,14 @@ public class Main {
 
         return numberOfParticipations;
     }
+
+
+    /**
+     * Izračunava i ispisuje sveukupne rezultate svih matematičkih klubova.
+     * @param clubs Lista matematičkih klubova.
+     * @param mathCompetitions Lista matematičkih natjecanja.
+     * @param mathProjects Lista matematičkih projekata.
+     */
 
     private static void calculateAndPrintMathClubResults(List<MathClub> clubs, List<Competition> mathCompetitions, List<MathProject> mathProjects) {
         for (MathClub club : clubs){

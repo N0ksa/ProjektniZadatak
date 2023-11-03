@@ -3,11 +3,20 @@ package hr.java.project.entities;
 import java.time.LocalDate;
 import java.util.Objects;
 
+/**
+ * Predstavlja članstvo u matematičkom klubu.
+ */
 public class ClubMembership {
     boolean isActiveMember;
     private LocalDate joinDate;
     private String membershipID;
 
+    /**
+     * Konstruktor za stvaranje instance članstva u matematičkom klubu.
+     *
+     * @param joinDate Datum pridruživanja klubu.
+     * @param membershipId Identifikacijski broj članstva.
+     */
     public ClubMembership(LocalDate joinDate, String membershipId) {
         this.joinDate = joinDate;
         this.isActiveMember = true;
