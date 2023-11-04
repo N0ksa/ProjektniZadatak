@@ -1,6 +1,7 @@
 package hr.java.project.main;
 
 import hr.java.project.entities.*;
+import hr.java.project.enums.MaxLimit;
 import hr.java.project.enums.YearOfStudy;
 
 import java.math.BigDecimal;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import hr.java.project.exception.*;
+import hr.java.project.sort.StudentSorter;
 import hr.java.project.utility.SafeInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,13 +19,6 @@ import org.slf4j.LoggerFactory;
  * Glavna klasa s metodom main i pomoćnim metodama.
  */
 public class Main {
-
-    private static final Integer MAX_NUMBER_OF_STUDENTS = 3;
-    private static final Integer MAX_NUMBER_OF_PROFESSORS = 0;
-    private static final Integer MAX_NUMBER_OF_MATH_CLUBS = 2;
-    private static final Integer MAX_NUMBER_OF_MATH_PROJECTS = 2;
-    private static final Integer MAX_NUMBER_OF_MATH_COMPETITIONS = 2;
-
     private static final Logger logger = LoggerFactory.getLogger(Main. class);
 
     /**
@@ -45,6 +40,8 @@ public class Main {
         calculateAndPrintStudentResults(students, mathCompetitions, mathProjects);
         calculateAndPrintMathClubResults(mathClubs, mathCompetitions, mathProjects);
 
+        sortStudentsBySurname(students);
+
 
     }
 
@@ -58,7 +55,7 @@ public class Main {
         List<Student> students = new ArrayList<>();
         boolean duplicateStudent = true;
 
-        for (int i = 0; i < MAX_NUMBER_OF_STUDENTS; i++) {
+        for (int i = 0; i < MaxLimit.MAX_NUMBER_OF_STUDENTS.getMaxNumber(); i++) {
             System.out.printf("Molimo unesite %d. studenta:\n", i + 1);
 
             do{
@@ -188,7 +185,7 @@ public class Main {
         List<Professor> professors = new ArrayList<>();
         boolean duplicateProfessor = true;
 
-        for (int i = 0; i < MAX_NUMBER_OF_PROFESSORS; i++) {
+        for (int i = 0; i < MaxLimit.MAX_NUMBER_OF_PROFESSORS.getMaxNumber(); i++) {
             System.out.printf("Molimo unesite %d. profesora:\n", i + 1);
 
             do{
@@ -254,7 +251,7 @@ public class Main {
         List<MathClub> mathClubs = new ArrayList<>();
         boolean duplicateMathClub = true;
 
-        for (int i = 0; i < MAX_NUMBER_OF_MATH_CLUBS; i++) {
+        for (int i = 0; i < MaxLimit.MAX_NUMBER_OF_MATH_CLUBS.getMaxNumber(); i++) {
             System.out.printf("Molimo unesite %d. matematički klub:\n", i + 1);
             do {
                 duplicateMathClub = true;
@@ -316,7 +313,7 @@ public class Main {
         List<Competition> mathCompetitions = new ArrayList<>();
         boolean duplicateMathCompetition = true;
 
-        for (int i = 0; i < MAX_NUMBER_OF_MATH_COMPETITIONS; i++) {
+        for (int i = 0; i < MaxLimit.MAX_NUMBER_OF_MATH_COMPETITIONS.getMaxNumber(); i++) {
             System.out.printf("Molimo unesite %d. matematičko natjecanje:\n", i + 1);
             do {
                 duplicateMathCompetition = true;
@@ -461,7 +458,7 @@ public class Main {
         List<MathProject> mathProjects = new ArrayList<>();
         boolean duplicateMathProject = true;
 
-        for (int i = 0; i < MAX_NUMBER_OF_MATH_PROJECTS; i++) {
+        for (int i = 0; i < MaxLimit.MAX_NUMBER_OF_MATH_PROJECTS.getMaxNumber(); i++) {
             System.out.printf("Molimo unesite %d. projekt\n", i + 1);
 
             do {
@@ -801,6 +798,18 @@ public class Main {
 
             System.out.printf("Klub %s skupio je sveukupno %.2f bodova\n", club.getName(),
                     overallScore);
+        }
+    }
+
+    /**
+     * Služi za sortiranje svih studenata prema njihovom prezimenu  i ispis na konzolu.
+     * @param students Lista studenata koji se sortiraju prema prezimenu.
+     */
+    private static void sortStudentsBySurname(List <Student> students){
+        students.sort(new StudentSorter(true));
+        System.out.println("Popis svih studenata sortiranih prema prezimenu:");
+        for (Student student: students){
+            System.out.printf("%s %s %s\n", student.getSurname(), student.getName(), student.getStudentId());
         }
     }
 

@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import hr.java.project.enums.ValidationRegex;
 import hr.java.project.exception.InputPredicateException;
 import hr.java.project.main.Main;
 import org.slf4j.Logger;
@@ -18,15 +19,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class SafeInput {
-    private static final String VALID_WEB_ADDRESS_REGEX = "www\\.[A-Za-z0-9]+\\.[A-Za-z]+";
-    private static final String VALID_POSTAL_CODE_REGEX = "[0-9]+";
-    private static final String VALID_LOCAL_DATE_REGEX = "dd.MM.yyyy.";
-    private static final String VALID_LOCAL_DATE_TIME_REGEX = "dd.MM.yyyy HH:mm:ss";
-
-    private static final String VALID_MEMBER_ID_REGEX = "\\d{5}";
-
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
-
 
     /**
      * Sigurno i pouzdano čita cijele brojeve iz korisničkog unosa dok se ne unese broj unutar određenog raspona.
@@ -111,7 +104,7 @@ public class SafeInput {
      * @return String - unesena web adresa u ispravnom formatu.
      */
     public static String enterValidWebAdress(Scanner input) {
-        Pattern pattern = Pattern.compile(VALID_WEB_ADDRESS_REGEX);
+        Pattern pattern = Pattern.compile(ValidationRegex.VALID_WEB_ADDRESS.getRegex());
 
         Matcher matcher;
         boolean validWebAdress = true;
@@ -138,7 +131,7 @@ public class SafeInput {
      * @return String -  uneseni poštanski broj u ispravnom formatu.
      */
     public static String enterValidPostalCode(Scanner input){
-        Pattern pattern = Pattern.compile(VALID_POSTAL_CODE_REGEX);
+        Pattern pattern = Pattern.compile(ValidationRegex.VALID_POSTAL_CODE.getRegex());
 
         Matcher matcher;
         boolean validPostalCode = true;
@@ -167,7 +160,7 @@ public class SafeInput {
 
         do{
             String dateString = input.nextLine();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(VALID_LOCAL_DATE_REGEX);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ValidationRegex.VALID_LOCAL_DATE_REGEX.getRegex());
             validInput = true;
 
             try{
@@ -197,7 +190,7 @@ public class SafeInput {
 
         do{
             String dateString = input.nextLine();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(VALID_LOCAL_DATE_TIME_REGEX);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ValidationRegex.VALID_LOCAL_DATE_TIME_REGEX.getRegex());
             validInput = true;
 
             try{
@@ -222,7 +215,7 @@ public class SafeInput {
      * @return String - ispravan broj članske iskaznice.
      */
     public static String secureCorrectMemberId(Scanner input){
-        Pattern pattern = Pattern.compile(VALID_MEMBER_ID_REGEX);
+        Pattern pattern = Pattern.compile(ValidationRegex.VALID_MEMBER_ID_REGEX.getRegex());
 
         Matcher matcher;
         String memberId;
