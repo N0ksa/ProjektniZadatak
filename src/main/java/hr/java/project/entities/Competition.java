@@ -2,8 +2,10 @@ package hr.java.project.entities;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Predstavlja matematičko natjecanje.
@@ -69,16 +71,13 @@ public class Competition extends NamedEntity {
     /**
      * Dohvaća rezultat natjecanja za određenog sudionika.
      * @param participant Student za kojeg se dohvaća rezultat natjecanja.
-     * @return CompetitionResult - rezultat natjecanja za sudionika,  <code>null</code> ako sudionik nije pronađen.
+     * @return {@code Optional} koji sadrži rezultat natjecanja za sudionika ili prazan optional ako sudionik nije bio na natjecanju.
      */
-    public CompetitionResult getCompetitionResultForParticipant(Student participant){
-        for (CompetitionResult competition: competitionResults){
-            if (competition.participant().equals(participant)){
-                return competition;
-            }
-        }
+    public Optional <CompetitionResult> getCompetitionResultForParticipant(Student participant){
 
-        return null;
+        return competitionResults.stream()
+                .filter(result -> result.participant().equals(participant))
+                .findFirst();
     }
 
     /**
@@ -99,17 +98,11 @@ public class Competition extends NamedEntity {
      * Vraća pobjednika natjecanja.
      * @return Student - pobjednik natjecanja.
      */
-    public Student findWinner(){
-        Student winner = null;
-        BigDecimal winnerScore = null;
-        for (CompetitionResult competition: competitionResults){
-            BigDecimal score  = competition.score();
-            if (winner == null || (winnerScore == null || score.compareTo(winnerScore) == 1)){
-                winner = competition.participant();
-            }
-        }
+    public Optional <Student> findWinner(){
 
-        return winner;
+       return competitionResults.stream()
+               .max(Comparator.comparing(CompetitionResult::score))
+               .map(CompetitionResult::participant);
     }
 
 

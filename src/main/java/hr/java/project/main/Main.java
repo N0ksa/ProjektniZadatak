@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import hr.java.project.exception.*;
 import hr.java.project.sort.StudentSorter;
@@ -41,7 +42,6 @@ public class Main {
         calculateAndPrintMathClubResults(mathClubs, mathCompetitions, mathProjects);
 
         sortStudentsBySurname(students);
-
 
     }
 
@@ -128,10 +128,10 @@ public class Main {
 
         for (int currentYear = 1; currentYear <= yearOfStudy; currentYear++){
             System.out.printf("%d. godina:\n", currentYear);
-            YearOfStudy year = collectYearOfStudy(currentYear);
+            Optional <YearOfStudy> year = collectYearOfStudy(currentYear);
 
-            if (year != null){
-                List<String> availableSubjects = year.getAvailableSubjects();
+            if (year.isPresent()){
+                List<String> availableSubjects = year.get().getAvailableSubjects();
                 for (String subject: availableSubjects){
                     System.out.printf("Unesite ocijenu iz '%s':", subject);
                     Integer subjectGrade = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 1 && x <= 5);
@@ -148,15 +148,16 @@ public class Main {
     /**
      *Služi za dohvaćanje objekta godine studija na temelju broja godine.
      * @param yearOfStudy Godina studija koja se želi dohvatiti.
-     * @return YearOfStudy - u slučaju kada postoji navedena godina, inače <code>null</code>
+     * @return Optional koji sadrži objekt {@code YearOfStudy} ako postoji navedena godina, inače prazan {@code Optional}.
      */
-    private static YearOfStudy collectYearOfStudy(int yearOfStudy){
+    private static Optional <YearOfStudy> collectYearOfStudy(int yearOfStudy){
         for (YearOfStudy year : YearOfStudy.values()){
             if (year.getYear() == yearOfStudy){
-                return year;
+                return Optional.of(year);
             }
         }
-        return null;
+
+       return Optional.empty();
     }
 
 
@@ -619,13 +620,13 @@ public class Main {
      * @param students Lista studenata prema kojoj se odabire student s najdužim članstvom.
      */
     private static void printStudentWithLongestMembership(List<Student> students) {
-        Student studentWithLongestMembership = findStudentWithLongestMembership(students);
-        if (studentWithLongestMembership != null) {
+        Optional <Student> studentWithLongestMembership = findStudentWithLongestMembership(students);
+        if (studentWithLongestMembership.isPresent()) {
             System.out.println("Student koji ima najduže članstvo u studentskom klubu je:");
             System.out.printf("%s %s %s\n"
-                    ,studentWithLongestMembership.getName()
-                    ,studentWithLongestMembership.getSurname()
-                    ,studentWithLongestMembership.getStudentId());
+                    ,studentWithLongestMembership.get().getName()
+                    ,studentWithLongestMembership.get().getSurname()
+                    ,studentWithLongestMembership.get().getStudentId());
         } else {
             System.out.println("Ne postoji registriran student koji je član studentskog kluba.");
         }
@@ -634,59 +635,38 @@ public class Main {
     /**
      * Služi za pronalazak studenta koji ima najduže članstvo u matematičkom klubu.
      * @param students Lista studenata prema kojoj se odabire student s najdužim članstvom.
-     * @return Student - student s najdužim članstvom.
+     * @return {@code Optional} koji sadrži studenta s najdužim članstvom ili je prazan ako nijedan student nema članstvo.
      */
-    private static Student findStudentWithLongestMembership(List<Student> students) {
-        LocalDate longestJoinDate = null;
-        Student studentWithLongestMembership = null;
+    private static Optional <Student> findStudentWithLongestMembership(List<Student> students) {
 
-        for (Student student : students) {
-            ClubMembership clubMembership = student.getClubMembership();
-
-            if (clubMembership != null) {
-                LocalDate joinDate = clubMembership.getJoinDate();
-
-                if (longestJoinDate == null || joinDate.isAfter(longestJoinDate)) {
-                    longestJoinDate = joinDate;
-                    studentWithLongestMembership = student;
-                }
-            }
-        }
-
-        return studentWithLongestMembership;
+        return students.stream()
+                .filter(student -> student.getClubMembership() != null)
+                .min(Comparator.comparing(student -> student.getClubMembership().getJoinDate()));
     }
 
     /**
      * Ispisuje matematički klub s najviše članova.
      * @param mathClubs Lista matematičkih klubova prema kojoj se odabire matematički klub s najviše studenata.
      */
-
     private static void printMathClubWithMostMembers(List<MathClub> mathClubs){
-        MathClub mathClubWithMostMembers = findMathClubWithMostMembers(mathClubs);
-        if (mathClubWithMostMembers != null){
+        Optional <MathClub> mathClubWithMostMembers = findMathClubWithMostMembers(mathClubs);
+        if (mathClubWithMostMembers.isPresent()){
             System.out.println("Studentski klub koji ima najviše članova je:");
-            System.out.printf("%s %s\n", mathClubWithMostMembers.getName(),
-                    mathClubWithMostMembers.getAddress());
+            System.out.printf("%s %s\n", mathClubWithMostMembers.get().getName(),
+                    mathClubWithMostMembers.get().getAddress());
         }
     }
 
     /**
      * Služi za pronalazak matematičkog kluba s najviše članova.
      * @param mathClubs Lista matematičkih klubova prema kojoj se odabire matematički klub s najviše studenata.
-     * @return MathClub - matematički klub s najviše studenata.
+     * @return {@code Optional} koji sadrži matematički klub s najviše studenata ili je prazan ako nijedan klub nema studenta.
      */
-    private static MathClub findMathClubWithMostMembers(List<MathClub> mathClubs){
-        MathClub mathClubWithMostMembers = null;
-        Integer maxNumberOfMembers = Integer.MIN_VALUE;
-        for (MathClub mathClub : mathClubs){
-            if(maxNumberOfMembers < mathClub.getStudents().size()){
-                maxNumberOfMembers = mathClub.getStudents().size();
-                mathClubWithMostMembers = mathClub;
-            }
+    private static Optional <MathClub> findMathClubWithMostMembers(List<MathClub> mathClubs) {
 
-        }
+        return mathClubs.stream()
+                .max(Comparator.comparing(mathClub -> mathClub.getNumberOfMembers()));
 
-        return mathClubWithMostMembers;
     }
 
     /**
@@ -713,14 +693,11 @@ public class Main {
      * @return List - lista svih rezultata matematičkih natjecanja na kojima je student sudjelovao.
      */
     private static List<CompetitionResult> getCompetitionResultsForStudent(Student participant, List<Competition> competitions){
-        List<CompetitionResult> competitionsResults = new ArrayList<>();
-        for (Competition competition: competitions){
-            if (competition.hasParticipant(participant)){
-                competitionsResults.add(competition.getCompetitionResultForParticipant(participant));
-            }
-        }
 
-        return competitionsResults;
+        return competitions.stream()
+                .filter(competition -> competition.hasParticipant(participant))
+                .map(competition -> competition.getCompetitionResultForParticipant(participant).get())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -730,15 +707,12 @@ public class Main {
      * @return Integer - broj sudjelovanja studenta na matematičkim projektima.
      */
     private static Integer countParticipationsInProjectsForStudent(Student participant, List<MathProject> projects){
-        int numberOfParticipations = 0;
-        for (MathProject project : projects){
-            if(project.hasStudentCollaborator(participant)){
-                numberOfParticipations++;
-            }
 
-        }
+        long numberOfParticipations = projects.stream()
+                .filter(mathProject -> mathProject.hasStudentCollaborator(participant))
+                .count();
 
-        return numberOfParticipations;
+        return (int) numberOfParticipations;
     }
 
 
@@ -749,19 +723,13 @@ public class Main {
      * @return List - lista svih rezultata matematičkih natjecanja za sve članove matematičkog kluba.
      */
     private static List<CompetitionResult> getCompetitionResultsForMathClub(MathClub mathClub, List<Competition> competitions){
-        List <Student> mathClubStudents = mathClub.getStudents();
-        List<CompetitionResult> competitionsResults = new ArrayList<>();
 
-        for (Student student : mathClubStudents){
-            for (Competition competition: competitions){
-                if (competition.hasParticipant(student)){
-                    competitionsResults.add(competition.getCompetitionResultForParticipant(student));
-                }
-            }
-        }
-
-
-        return competitionsResults;
+        return mathClub.getStudents().stream()
+                .flatMap(student -> competitions.stream()
+                        .filter(competition -> competition.hasParticipant(student))
+                        .map(competition -> competition.getCompetitionResultForParticipant(student).get())
+                )
+                .collect(Collectors.toList());
     }
 
 
@@ -772,15 +740,13 @@ public class Main {
      * @return Integer - broj sudjelovanja matematičkog kluba na matematičkim projektima.
      */
     private static Integer countParticipationsInProjectsForMathClub(MathClub participant, List<MathProject> projects){
-        int numberOfParticipations = 0;
-        for (MathProject project : projects){
-            if(project.hasMathCollaborator(participant)){
-                numberOfParticipations++;
-            }
 
-        }
+        long numberOfParticipations =  projects.stream()
+                .filter(mathProject -> mathProject.hasMathCollaborator(participant))
+                .count();
 
-        return numberOfParticipations;
+        return (int) numberOfParticipations;
+
     }
 
 
@@ -792,6 +758,7 @@ public class Main {
      */
 
     private static void calculateAndPrintMathClubResults(List<MathClub> clubs, List<Competition> mathCompetitions, List<MathProject> mathProjects) {
+
         for (MathClub club : clubs){
             BigDecimal overallScore = club.calculateScore(getCompetitionResultsForMathClub(club, mathCompetitions),
                     countParticipationsInProjectsForMathClub(club, mathProjects));
@@ -807,10 +774,11 @@ public class Main {
      */
     private static void sortStudentsBySurname(List <Student> students){
         students.sort(new StudentSorter(true));
+
         System.out.println("Popis svih studenata sortiranih prema prezimenu:");
-        for (Student student: students){
-            System.out.printf("%s %s %s\n", student.getSurname(), student.getName(), student.getStudentId());
-        }
+        students.forEach(student -> System.out.printf("%s %s %s\n", student.getSurname(), student.getName(), student.getStudentId()));
+
+
     }
 
 }
