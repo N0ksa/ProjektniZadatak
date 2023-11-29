@@ -8,20 +8,18 @@ import java.util.Objects;
 
 public class Professor extends NamedEntity {
     private String surname;
-    private String professorId;
     private String email;
 
     /**
      * Konstruktor za stvaranje nove instance profesora".
+     * @param id Id profesora.
      * @param name  Ime profesora.
      * @param surname  Prezime profesora.
-     * @param professorId Identifikacijski broj profesora.
      * @param email Adresa elektroničke pošte profesora.
      */
-    public Professor(String name, String surname, String professorId, String email) {
-        super(name);
+    public Professor(Long id, String name, String surname, String email) {
+        super(id, name);
         this.surname = surname;
-        this.professorId = professorId;
         this.email = email;
     }
 
@@ -31,14 +29,6 @@ public class Professor extends NamedEntity {
 
     public void setSurname(String surname) {
         this.surname = surname;
-    }
-
-    public String getProfessorId() {
-        return professorId;
-    }
-
-    public void setProfessorId(String professorId) {
-        this.professorId = professorId;
     }
 
     public String getEmail() {
@@ -55,11 +45,11 @@ public class Professor extends NamedEntity {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Professor professor = (Professor) o;
-        return Objects.equals(surname, professor.surname) && Objects.equals(professorId, professor.professorId);
+        return Objects.equals(surname, professor.surname) && Objects.equals(email, professor.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(surname, professorId, email);
+        return Objects.hash(super.hashCode(), surname, email);
     }
 }

@@ -6,9 +6,12 @@ import java.util.Objects;
  * Apstraktna klasa koja predstavlja entitet s nazivom.
  */
 public abstract class NamedEntity {
+
+    private Long id;
     private String name;
 
-    public NamedEntity(String name) {
+    public NamedEntity(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 
@@ -18,6 +21,15 @@ public abstract class NamedEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override

@@ -3,14 +3,15 @@ package hr.java.project.entities;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Predstavlja matematički klub.
  * Implementira sučelje {@link Gradable}, što znači da se može ocjenjivati.
  */
 public class MathClub extends NamedEntity implements Gradable {
-    private Adress address;
-    private List<Student> students;
+    private Address address;
+    private Set<Student> students;
 
     /**
      * Konstruktor za stvaranje objekta razreda "MathClub".
@@ -18,25 +19,25 @@ public class MathClub extends NamedEntity implements Gradable {
      * @param address Adresa kluba.
      * @param students Lista studenata koji su članovi kluba.
      */
-    public MathClub(String name, Adress address, List<Student> students) {
-        super(name);
+    public MathClub(Long clubId, String name, Address address, Set<Student> students) {
+        super(clubId, name);
         this.address = address;
         this.students = students;
     }
 
-    public Adress getAddress() {
+    public Address getAddress() {
         return address;
     }
 
-    public void setAddress(Adress address) {
+    public void setAddress(Address address) {
         this.address = address;
     }
 
-    public List<Student> getStudents() {
+    public Set<Student> getStudents() {
         return students;
     }
 
-    public void setStudents(List<Student> students) {
+    public void setStudents(Set<Student> students) {
         this.students = students;
     }
 

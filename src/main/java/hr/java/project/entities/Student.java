@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Predstavlja studenta.
@@ -12,12 +13,11 @@ import java.util.Objects;
  */
 public class Student extends NamedEntity implements Gradable{
     private String surname;
-    private String studentId;
     private String email;
     private Integer yearOfStudy;
     private Map<String, Integer> grades;
 
-    private ClubMembership clubMembership;
+    private Optional<ClubMembership> clubMembership;
 
 
     /**
@@ -29,11 +29,11 @@ public class Student extends NamedEntity implements Gradable{
      * @param yearOfStudy Trenutna godina studija studenta.
      * @param grades Mapa koja sadrži ocjene studenta.
      */
-    public Student(String name, String surname, String studentId, String email, Integer yearOfStudy, Map<String,
-            Integer> grades) {
-        super(name);
+    public Student(String name, String surname, Long studentId, String email, Integer yearOfStudy, Map<String,
+            Integer> grades, Optional<ClubMembership> membership) {
+
+        super(studentId, name);
         this.surname = surname;
-        this.studentId = studentId;
         this.email = email;
         this.yearOfStudy = yearOfStudy;
         this.grades = grades;
@@ -47,14 +47,6 @@ public class Student extends NamedEntity implements Gradable{
 
     public void setSurname(String surname) {
         this.surname = surname;
-    }
-
-    public String getStudentId() {
-        return studentId;
-    }
-
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
     }
 
     public String getEmail() {
@@ -81,12 +73,12 @@ public class Student extends NamedEntity implements Gradable{
         this.grades = grades;
     }
 
-    public ClubMembership getClubMembership() {
+    public Optional <ClubMembership> getClubMembership() {
         return clubMembership;
     }
 
     public void setClubMembership(ClubMembership clubMembership) {
-        this.clubMembership = clubMembership;
+        this.clubMembership = Optional.ofNullable(clubMembership);
     }
 
 
@@ -150,11 +142,15 @@ public class Student extends NamedEntity implements Gradable{
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Student student = (Student) o;
-        return Objects.equals(surname, student.surname) && Objects.equals(studentId, student.studentId);
+        return Objects.equals(surname, student.surname)
+                && Objects.equals(email, student.email)
+                && Objects.equals(yearOfStudy, student.yearOfStudy)
+                && Objects.equals(grades, student.grades)
+                && Objects.equals(clubMembership, student.clubMembership);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(surname, studentId, email, yearOfStudy, grades, clubMembership);
+        return Objects.hash(super.hashCode(), surname, email, yearOfStudy, grades, clubMembership);
     }
 }

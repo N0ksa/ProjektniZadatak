@@ -2,16 +2,15 @@ package hr.java.project.main;
 
 import hr.java.project.entities.*;
 import hr.java.project.enums.MaxLimit;
-import hr.java.project.enums.YearOfStudy;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import hr.java.project.exception.*;
 import hr.java.project.sort.StudentSorter;
+import hr.java.project.utility.FileReaderUtil;
 import hr.java.project.utility.SafeInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +28,10 @@ public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
 
-        List<Student> students = collectAndValidateStudentsFromUser(input);
-        List<Professor> professors = collectAndValidateProfessorsFromUser(input);
-        List<MathClub> mathClubs = collectAndValidateMathClubsFromUser(input, students);
+        List<Student> students = FileReaderUtil.getStudentsFromFile();
+        List<Professor> professors = FileReaderUtil.getProfessorsFromFile();
+        List <Address> addresses = FileReaderUtil.getAddressesFromFile();
+        List<MathClub> mathClubs = FileReaderUtil.getMathClubsFromFile(students, addresses);
         List <MathProject> mathProjects = collectAndValidateMathProjectsFromUser(input, mathClubs);
         List<Competition> mathCompetitions  = collectAndValidateMathCompetitionsFromUser(input, students);
 
@@ -45,263 +45,6 @@ public class Main {
 
     }
 
-
-    /**
-     *Učitava nove studente od korisnika i provjerava njihovu jedinstvenost.
-     * @param input Scanner objekt kojim se učitavaju podaci.
-     * @return List - lista studenata koji su uneseni i validirani.
-     */
-    private static List<Student> collectAndValidateStudentsFromUser(Scanner input) {
-        List<Student> students = new ArrayList<>();
-        boolean duplicateStudent = true;
-
-        for (int i = 0; i < MaxLimit.MAX_NUMBER_OF_STUDENTS.getMaxNumber(); i++) {
-            System.out.printf("Molimo unesite %d. studenta:\n", i + 1);
-
-            do{
-                duplicateStudent = true;
-
-                try{
-                    Student newStudent = createStudent(input, students);
-                    students.add(newStudent);
-                    duplicateStudent = false;
-                }
-                catch(DuplicateStudentException e){
-                    System.out.println("Već postoji taj student! Molim pokušajte ponovno.");
-                    logger.info(e.getMessage(), e);
-                }
-            }while(duplicateStudent);
-
-        }
-        return students;
-    }
-
-    /**
-     *Služi za kreiranje novog studenta na temelju korisnikovog unosa.
-     * @param input Scanner objekt kojim se učitavaju podaci.
-     * @param existingStudents Lista studenata prema kojima se određuje da li je uneseni student duplikat.
-     * @return Student -nova instanca studenta.
-     * @throws DuplicateStudentException Baca iznimku ako je uneseni student duplikat već unesenog studenta.
-     */
-    private static Student createStudent (Scanner input, List<Student> existingStudents) throws DuplicateStudentException{
-        System.out.print("Unesi ime studenta: ");
-        String studentName = input.nextLine();
-
-        System.out.print("Unesi prezime studenta: ");
-        String studentSurname = input.nextLine();
-
-        System.out.print("Unesi JMBAG studenta: ");
-        String studentID = input.nextLine();
-
-        System.out.print("Unesi email studenta: ");
-        String studentEmail = SafeInput.enterValidWebAdress(input);
-
-        System.out.print("Unesi godinu studija studenta: ");
-        int yearOfStudy = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 1 && x <= 3);
-
-        Map<String, Integer> grades = collectSubjectsAndGrades(input, yearOfStudy);
-
-        Student newStudent = new Student(studentName, studentSurname, studentID, studentEmail, yearOfStudy, grades);
-
-        System.out.println("Da li je student član matematičkog kluba?");
-        System.out.println("1-Da\n2-Ne");
-
-        int choice = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 1 && x <= 2);
-        ClubMembership clubMembership = (choice == 1) ? createClubMembership(input) : null;
-        newStudent.setClubMembership(clubMembership);
-
-        if (existingStudents.contains(newStudent)){
-            throw new DuplicateStudentException("Unesen već postojeći student");
-        }
-
-        return newStudent;
-    }
-
-    /**
-     * Služi za prikupljanje studentovih ocjena, u ovisnosti o njegovoj godini studija.
-     * @param input Scanner objekt kojim se učitavaju podaci.
-     * @param yearOfStudy Godina studija.
-     * @return Map - sadrži predmete i njihove ocjene.
-     */
-    private static Map<String, Integer> collectSubjectsAndGrades(Scanner input, int yearOfStudy){
-        Map <String, Integer> grades = new HashMap<>();
-
-        for (int currentYear = 1; currentYear <= yearOfStudy; currentYear++){
-            System.out.printf("%d. godina:\n", currentYear);
-            Optional <YearOfStudy> year = collectYearOfStudy(currentYear);
-
-            if (year.isPresent()){
-                List<String> availableSubjects = year.get().getAvailableSubjects();
-                for (String subject: availableSubjects){
-                    System.out.printf("Unesite ocijenu iz '%s':", subject);
-                    Integer subjectGrade = SafeInput.secureCorrectIntegerInterval(input, x -> x >= 1 && x <= 5);
-
-                    grades.put(subject, subjectGrade);
-                }
-            }
-
-        }
-
-        return grades;
-    }
-
-    /**
-     *Služi za dohvaćanje objekta godine studija na temelju broja godine.
-     * @param yearOfStudy Godina studija koja se želi dohvatiti.
-     * @return Optional koji sadrži objekt {@code YearOfStudy} ako postoji navedena godina, inače prazan {@code Optional}.
-     */
-    private static Optional <YearOfStudy> collectYearOfStudy(int yearOfStudy){
-        for (YearOfStudy year : YearOfStudy.values()){
-            if (year.getYear() == yearOfStudy){
-                return Optional.of(year);
-            }
-        }
-
-       return Optional.empty();
-    }
-
-
-    /**
-     * Služi za kreiranje klubskog članstva.
-     * @param input Scanner objekt kojim se učitavaju podaci.
-     * @return ClubMembership - klubsko članstvo.
-     */
-    private static ClubMembership createClubMembership(Scanner input) {
-        System.out.println("Upišite datum učlanjivanja (dd.MM.yyyy.): ");
-        LocalDate joinDate = SafeInput.secureCorrectLocalDate(input);
-
-        System.out.println("Upišite broj članske iskaznice: ");
-        String membershipId = SafeInput.secureCorrectMemberId(input);
-
-        return new ClubMembership(joinDate, membershipId);
-    }
-
-
-    /**
-     *Učitava nove profesore od korisnika i provjerava njihovu jedinstvenost.
-     * @param input Scanner objekt kojim se učitavaju podaci.
-     * @return List - lista profesora koji su uneseni i validirani.
-     */
-    private static List<Professor> collectAndValidateProfessorsFromUser(Scanner input) {
-        List<Professor> professors = new ArrayList<>();
-        boolean duplicateProfessor = true;
-
-        for (int i = 0; i < MaxLimit.MAX_NUMBER_OF_PROFESSORS.getMaxNumber(); i++) {
-            System.out.printf("Molimo unesite %d. profesora:\n", i + 1);
-
-            do{
-                duplicateProfessor = true;
-
-                try{
-                    Professor newProfessor = createProfessor(input, professors);
-                    professors.add(newProfessor);
-                    duplicateProfessor = false;
-                }
-                catch (DuplicateProfessorException e){
-                    System.out.println("Već postoji taj profesor! Molim pokušajte ponovno.");
-                    logger.info(e.getMessage(), e);
-                }
-
-            }while(duplicateProfessor);
-        }
-        return professors;
-    }
-
-
-    /**
-     * Služi za kreiranje novog profesora na temelju korisnikovog unosa.
-     * @param input  Scanner objekt kojim se učitavaju podaci.
-     * @param existingProfessors Lista profesora prema kojima se određuje da li je uneseni profesor duplikat.
-     * @return nova instanca profesora.
-     * @throws DuplicateProfessorException Baca iznimku ako je uneseni profesor duplikat već unesenog profesora.
-     */
-    private static Professor createProfessor(Scanner input, List <Professor> existingProfessors)
-            throws DuplicateProfessorException {
-
-        System.out.print("Unesi ime profesora: ");
-        String professorName = input.nextLine();
-
-        System.out.print("Unesi prezime profesora: ");
-        String professorSurname = input.nextLine();
-
-        System.out.print("Unesi JMBAG profesora: ");
-        String professorId = input.nextLine();
-
-        System.out.print("Unesi email profesora: ");
-        String professorEmail = SafeInput.enterValidWebAdress(input);
-
-        Professor newProfessor = new Professor(professorName, professorSurname, professorId, professorEmail);
-
-        if (existingProfessors.contains(newProfessor)){
-            throw new DuplicateProfessorException("Unesen već postojeći profesor");
-        }
-
-        return newProfessor;
-
-
-    }
-
-
-    /**
-     *Učitava nove matematičke klubove od korisnika i provjerava njihovu jedinstvenost.
-     * @param input Scanner objekt kojim se učitavaju podaci.
-     * @param students Lista studenata iz koje se biraju članovi matematičkog kluba.
-     * @return List - lista matematičkih klubova koji su uneseni i validirani.
-     */
-    private static List<MathClub> collectAndValidateMathClubsFromUser(Scanner input, List<Student> students) {
-        List<MathClub> mathClubs = new ArrayList<>();
-        boolean duplicateMathClub = true;
-
-        for (int i = 0; i < MaxLimit.MAX_NUMBER_OF_MATH_CLUBS.getMaxNumber(); i++) {
-            System.out.printf("Molimo unesite %d. matematički klub:\n", i + 1);
-            do {
-                duplicateMathClub = true;
-                try{
-                    MathClub newMathClub = createMathClub(input, students, mathClubs);
-                    mathClubs.add(newMathClub);
-                    duplicateMathClub = false;
-                }
-                catch (DuplicateMathClubException e){
-                    System.out.println("Već postoji taj matematički klub! Molim pokušajte ponovno.");
-                    logger.info(e.getMessage(), e);
-                }
-
-            }while(duplicateMathClub);
-
-            mathClubs.add(createMathClub(input, students, mathClubs));
-        }
-        return mathClubs;
-    }
-
-
-    /**
-     * Služi za kreiranje novog matematičkog kluba na temelju korisnikovog unosa.
-     * @param input Scanner objekt kojim se učitavaju podaci.
-     * @param students Lista studenata iz koje se biraju članovi matematičkog kluba.
-     * @param existingMathClubs Lista matematičkih klubova prema kojima se određuje da li je uneseni klub duplikat.
-     * @return MathClub - novi matematički klub
-     * @throws DuplicateMathClubException Baca iznimku ako je uneseni matematički klub duplikat već unesenog kluba.
-     */
-    private static MathClub createMathClub(Scanner input, List<Student> students, List<MathClub> existingMathClubs)
-    throws DuplicateMathClubException{
-        System.out.print("Upišite ime kluba: ");
-        String clubName = input.nextLine();
-
-        System.out.println("Upišite informacije o adresi kluba");
-        Adress adress = enterAdress(input);
-
-        List<Student> selectedStudents = selectStudents(input, students);
-
-
-        MathClub newMathClub = new MathClub(clubName, adress, selectedStudents);
-
-        if(existingMathClubs.contains(newMathClub)){
-            throw new DuplicateMathClubException("Unesen već postojeći matematički klub");
-        }
-
-        return newMathClub;
-
-    }
 
     /**
      * Učitava nova matematička natjecanja od korisnika i provjerava njihovu jedinstvenost.

@@ -7,20 +7,18 @@ import java.util.Objects;
  * Predstavlja članstvo u matematičkom klubu.
  */
 public class ClubMembership {
-    boolean isActiveMember;
     private LocalDate joinDate;
     private String membershipID;
 
     /**
      * Konstruktor za stvaranje instance članstva u matematičkom klubu.
      *
-     * @param joinDate Datum pridruživanja klubu.
+     * @param joinDate     Datum pridruživanja klubu.
      * @param membershipId Identifikacijski broj članstva.
      */
-    public ClubMembership(LocalDate joinDate, String membershipId) {
-        this.joinDate = joinDate;
-        this.isActiveMember = true;
+    public ClubMembership(String membershipId, LocalDate joinDate) {
         this.membershipID = membershipId;
+        this.joinDate = joinDate;
     }
 
     public LocalDate getJoinDate() {
@@ -31,14 +29,6 @@ public class ClubMembership {
         this.joinDate = joinDate;
     }
 
-    public boolean isActiveMember() {
-        return isActiveMember;
-    }
-
-    public void setActiveMember(boolean activeMember) {
-        isActiveMember = activeMember;
-    }
-
     public String getMembershipID() {
         return membershipID;
     }
@@ -47,17 +37,17 @@ public class ClubMembership {
         this.membershipID = membershipID;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ClubMembership that = (ClubMembership) o;
-        return isActiveMember == that.isActiveMember && Objects.equals(joinDate, that.joinDate)
-                && Objects.equals(membershipID.toLowerCase(), that.membershipID.toLowerCase());
+        return Objects.equals(joinDate, that.joinDate) && Objects.equals(membershipID, that.membershipID);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(isActiveMember, joinDate, membershipID);
+        return Objects.hash(joinDate, membershipID);
     }
 }
