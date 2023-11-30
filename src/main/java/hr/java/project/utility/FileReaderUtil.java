@@ -11,7 +11,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,8 +27,10 @@ public class FileReaderUtil {
     private static final String STUDENTS_FILE_NAME = "dat/students.txt";
     private static final String PROFESSORS_FILE_NAME = "dat/professors.txt";
     private static final String ADDRESSES_FILE_NAME = "dat/addresses.txt";
-    private static final String STORES_FILE_NAME = "dat/stores.txt";
     private static final String MATH_CLUBS_FILE_NAME = "dat/math-clubs.txt";
+    private static final String MATH_PROJECTS_FILE_NAME = "dat/math-projects.txt";
+    private static final String MATH_COMPETITIONS_FILE_NAME = "dat/competitions.txt";
+
     private static final Logger logger = LoggerFactory.getLogger(FileReaderUtil.class);
 
 
@@ -49,6 +53,7 @@ public class FileReaderUtil {
                 String studentSurname = reader.readLine();
                 Long studentId = Long.parseLong(reader.readLine());
                 String studentWebAddress = reader.readLine();
+
                 Integer studentYearOfStudy = Integer.parseInt(reader.readLine());
                 List<Integer> studentGrades = Stream.of(reader.readLine().split(","))
                         .map(grade -> Integer.parseInt(grade))
@@ -90,7 +95,7 @@ public class FileReaderUtil {
             }
 
         } catch (IOException ex) {
-            String message = "Dogodila se pogreška kod čitanja datoteke - + " + STORES_FILE_NAME;
+            String message = "Dogodila se pogreška kod čitanja datoteke - + " + STUDENTS_FILE_NAME;
             logger.error(message, ex);
             System.out.println(message);
         }
@@ -118,8 +123,8 @@ public class FileReaderUtil {
                 String professorSurname = reader.readLine();
                 Long professorId = Long.parseLong(reader.readLine());
                 String professorWebAddress = reader.readLine();
-                reader.readLine();
 
+                reader.readLine();
 
                 professors.add(new Professor(professorId, professorName, professorSurname, professorWebAddress));
             }
@@ -195,7 +200,10 @@ public class FileReaderUtil {
                         .filter(address -> address.getAddressId().compareTo(addressId) == 0)
                         .findFirst();
 
-                List<String> membersIdString = Arrays.asList(reader.readLine().trim().split(","));
+                List<String> membersIdString = Arrays.asList(reader.readLine().split(","))
+                        .stream()
+                        .map(String::trim)
+                        .collect(Collectors.toList());
 
                 List <Long> membersId = membersIdString.stream()
                         .map(stringId -> Long.parseLong(stringId))
@@ -206,6 +214,8 @@ public class FileReaderUtil {
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .collect(Collectors.toSet());
+
+                reader.readLine();
 
                 mathClubAddress.ifPresent(address -> mathClubs.add(new MathClub(mathClubId, mathClubName, address, mathClubMembers)));
 
@@ -222,6 +232,109 @@ public class FileReaderUtil {
     }
 
 
+
+    public static List<Competition> getMathCompetitionsFromFile(List<Student> students, List<Address> addresses){
+        List<Competition> mathCompetitions = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(MATH_COMPETITIONS_FILE_NAME))) {
+
+            String line;
+
+            while ((Optional.ofNullable(line = reader.readLine()).isPresent())) {
+
+                Long competitionId = Long.parseLong(line);
+                String competitionName = reader.readLine();
+                String competitionDescription = reader.readLine();
+
+                Long addressId = Long.parseLong(reader.readLine());
+                Optional competitionAddress = addresses.stream()
+                        .filter(address -> address.getAddressId().compareTo(addressId) == 0)
+                        .findFirst();
+
+                LocalDateTime competitionTime = LocalDateTime.parse(reader.readLine(),
+                        DateTimeFormatter.ofPattern(ValidationRegex.VALID_LOCAL_DATE_TIME_REGEX.getRegex()));
+
+                Record auditorium = new Auditorium(reader.readLine(), reader.readLine());
+
+                List<String> competitionResultsString = Arrays.asList(reader.readLine().split(","));
+                Set<CompetitionResult> competitionResults = competitionResultsString.stream()
+                        .map(competitionString ->{
+                            List<String> individualResults = Arrays.asList(competitionString.trim().split("-"));
+
+                            Long studentId = Long.parseLong(individualResults.get(0));
+                            BigDecimal result = new BigDecimal(individualResults.get(1));
+
+                            Optional<Student> participant = findStudentById(studentId, students);
+
+                            return new CompetitionResult(participant.get(), result);
+
+                })
+                        .collect(Collectors.toSet());
+
+
+                reader.readLine();
+
+            }
+        }
+        catch (IOException ex) {
+            String message = "Dogodila se pogreška kod čitanja datoteke - + " + MATH_COMPETITIONS_FILE_NAME;
+            logger.error(message, ex);
+            System.out.println(message);
+        }
+
+        return mathCompetitions;
+    }
+
+
+    public static List<MathProject> getMathProjectsFromFile(List<MathClub> studentClubs, List<Student> students){
+
+        List<MathProject> mathProjects = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(MATH_PROJECTS_FILE_NAME))) {
+
+            String line;
+            while ((Optional.ofNullable(line = reader.readLine()).isPresent())) {
+
+                Long projectId = Long.parseLong(line);
+                String projectName = reader.readLine();
+                String projectDescription = reader.readLine();
+
+                List <String> collaboratorsByStudentClubString = Arrays.asList(reader.readLine().split("/"));
+
+                Map<MathClub, List<Student>> collaborators = collaboratorsByStudentClubString.stream()
+                        .map(collaborator -> {
+                            List <String> clubStudentString = Arrays.asList(collaborator.split("-"));
+                            Long mathClubId = Long.parseLong(clubStudentString.get(0));
+                            List <Long> studentsId = Arrays.stream(clubStudentString.get(1)
+                                    .trim()
+                                    .split(","))
+                                    .map(studentString -> Long.parseLong(studentString))
+                                    .collect(Collectors.toList());
+
+                            Optional<MathClub> mathClubOptional = findMathClubById(mathClubId, studentClubs);
+                            List<Student> studentList = studentsId.stream()
+                                    .map(studentId -> findStudentById(studentId, students))
+                                    .filter(Optional::isPresent)
+                                    .map(Optional::get)
+                                    .collect(Collectors.toList());
+
+
+                            return Map.entry(mathClubOptional.get(), studentList);
+
+                })
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+                reader.readLine();
+
+            }
+        }catch (IOException ex) {
+            String message = "Dogodila se pogreška kod čitanja datoteke - + " + MATH_PROJECTS_FILE_NAME;
+            logger.error(message, ex);
+            System.out.println(message);
+        }
+
+        return mathProjects;
+    }
+
+
     /**
      * Pronalazi studenta s određenim identifikacijskim brojem u zadanoj listi.
      * @param id Identifikacijski broj studenta kojeg treba pronaći.
@@ -231,6 +344,12 @@ public class FileReaderUtil {
     public static Optional<Student> findStudentById(Long id, List<Student> students){
         return students.stream()
                 .filter(student -> student.getId().compareTo(id) == 0)
+                .findFirst();
+    }
+
+    public static Optional<MathClub> findMathClubById(Long id, List<MathClub> mathClubs){
+        return mathClubs.stream()
+                .filter(mathClub -> mathClub.getId().compareTo(id) == 0)
                 .findFirst();
     }
 

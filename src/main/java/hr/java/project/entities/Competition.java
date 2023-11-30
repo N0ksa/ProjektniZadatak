@@ -13,7 +13,8 @@ import java.util.Optional;
 public class Competition extends NamedEntity {
 
     private String description;
-    private Adress adress;
+    private Address address;
+    private Auditorium auditorium;
     private LocalDateTime timeOfCompetition;
     private List <CompetitionResult> competitionResults;
 
@@ -21,15 +22,16 @@ public class Competition extends NamedEntity {
      * Konstruktor za stvaranje nove instance matematičkog natjecanja.
      * @param name Naziv natjecanja.
      * @param description Opis natjecanja.
-     * @param adress Adresa održavanja natjecanja.
+     * @param address Adresa održavanja natjecanja.
      * @param timeOfCompetition Vrijeme održavanja natjecanja.
      * @param competitionResults Rezultati natjecatelja.
      */
-    public Competition(String name, String description, Adress adress, LocalDateTime timeOfCompetition,
+    public Competition(Long competitionId, String name, String description, Address address, Auditorium auditorium, LocalDateTime timeOfCompetition,
                        List<CompetitionResult> competitionResults) {
-        super(name);
+        super(competitionId, name);
         this.description = description;
-        this.adress = adress;
+        this.address = address;
+        this.auditorium = auditorium;
         this.timeOfCompetition = timeOfCompetition;
         this.competitionResults = competitionResults;
     }
@@ -43,12 +45,20 @@ public class Competition extends NamedEntity {
         this.description = description;
     }
 
-    public Adress getAdress() {
-        return adress;
+    public Address getAddress() {
+        return address;
     }
 
-    public void setAdress(Adress adress) {
-        this.adress = adress;
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public Auditorium getAuditorium() {
+        return auditorium;
+    }
+
+    public void setAuditorium(Auditorium auditorium) {
+        this.auditorium = auditorium;
     }
 
     public LocalDateTime getTimeOfCompetition() {
@@ -62,6 +72,8 @@ public class Competition extends NamedEntity {
     public List<CompetitionResult> getCompetitionResults() {
         return competitionResults;
     }
+
+
 
     public void setCompetitionResults(List<CompetitionResult> competitionResults) {
         this.competitionResults = competitionResults;
@@ -112,13 +124,15 @@ public class Competition extends NamedEntity {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Competition that = (Competition) o;
-        return Objects.equals(description.toLowerCase(), that.description.toLowerCase())
-                && Objects.equals(adress, that.adress)
-                && Objects.equals(timeOfCompetition, that.timeOfCompetition);
+        return Objects.equals(description, that.description)
+                && Objects.equals(address, that.address)
+                && Objects.equals(auditorium, that.auditorium)
+                && Objects.equals(timeOfCompetition, that.timeOfCompetition)
+                && Objects.equals(competitionResults, that.competitionResults);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), description, adress, timeOfCompetition, competitionResults);
+        return Objects.hash(super.hashCode(), description, address, auditorium, timeOfCompetition, competitionResults);
     }
 }

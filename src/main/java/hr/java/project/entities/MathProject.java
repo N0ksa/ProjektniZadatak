@@ -18,8 +18,8 @@ public class MathProject extends NamedEntity {
      * @param description Opis projekta.
      * @param collaborators Mapa koja povezuje matematičke klubove s njihovim članovima koji sudjeluju u projektu.
      */
-    public MathProject(String name, String description, Map<MathClub, List<Student>> collaborators) {
-        super(name);
+    public MathProject(Long projectId, String name, String description, Map<MathClub, List<Student>> collaborators) {
+        super(projectId, name);
         this.description = description;
         this.collaborators = collaborators;
     }
@@ -71,7 +71,7 @@ public class MathProject extends NamedEntity {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         MathProject that = (MathProject) o;
-        return Objects.equals(description.toLowerCase(), that.description.toLowerCase())
+        return Objects.equals(description, that.description)
                 && Objects.equals(collaborators, that.collaborators);
     }
 

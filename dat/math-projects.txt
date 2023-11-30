@@ -1,0 +1,9 @@
+1000000
+Fraktalna Harmonija
+Istražuje matematičke principe koji leže u osnovi fraktala i njihove primjene u stvaranju vizualno impresivnih umjetničkih djela.\nProjekt također ispituje povezanost fraktala s glazbenim teorijama.
+10000-1234567890,9087654321/10001-9087654321,4321567890
+
+1000001
+Neuralne mreže
+Ovaj projekt analizira matematičke osnove iza neuronskih mreža, proučavajući algebarske, topološke i diferencijalne jednadžbe koje modeliraju ponašanje ovih moćnih alata za strojno učenje.
+10000-1234567890,9087654321/10001-9087654321

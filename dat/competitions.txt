@@ -1,0 +1,17 @@
+1000
+Klokan
+Studentsko matematičko natjecanje koje okuplja mlade matematičare iz različitih studentskih klubova.\nKlokan natjecanje ne samo da potiče natjecateljski duh, već i razvija matematičko razmišljanje, logiku i kreativnost među mladima.
+100010
+12.12.2023 09:00:00
+Velika dvorana
+Glavna zgrada
+9087654321-80, 1234567890-25, 4321567890-78
+
+1001
+Monom
+Uzbudljivi događaj koji okuplja studente željne rješavanja izazovnih matematičkih problema.\nNatjecanje stvara poticajno okruženje za učenje i razmjenu ideja.
+100011
+10.02.2024 11:15:00
+Dvorana 505
+Glavna zgrada
+1234567890-65

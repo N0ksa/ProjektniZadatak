@@ -37,7 +37,7 @@ public class Student extends NamedEntity implements Gradable{
         this.email = email;
         this.yearOfStudy = yearOfStudy;
         this.grades = grades;
-        this.clubMembership = clubMembership;
+        this.clubMembership = membership;
     }
 
 
