@@ -1,5 +1,6 @@
 package hr.java.project.entities;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Optional;
  * Predstavlja studenta.
  * Implementira sučelje {@link Gradable}, što znači da se može ocjenjivati.
  */
-public class Student extends NamedEntity implements Gradable{
+public class Student extends NamedEntity implements Gradable, Serializable {
     private String surname;
     private String email;
     private Integer yearOfStudy;

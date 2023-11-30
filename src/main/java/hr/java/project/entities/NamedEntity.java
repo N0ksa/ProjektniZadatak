@@ -1,11 +1,12 @@
 package hr.java.project.entities;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Apstraktna klasa koja predstavlja entitet s nazivom.
  */
-public abstract class NamedEntity {
+public abstract class NamedEntity implements Serializable {
 
     private Long id;
     private String name;

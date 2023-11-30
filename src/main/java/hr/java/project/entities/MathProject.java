@@ -1,5 +1,6 @@
 package hr.java.project.entities;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -8,7 +9,7 @@ import java.util.Objects;
  * Predstavlja matematički projekt.
  */
 
-public class MathProject extends NamedEntity {
+public class MathProject extends NamedEntity implements Serializable {
     private String description;
     private Map<MathClub, List<Student>> collaborators;
 
@@ -61,7 +62,7 @@ public class MathProject extends NamedEntity {
      * @param mathClubToCheck Matematički klub koji se provjerava da li sudjeluje u projektu.
      * @return <code>true</code> ako je student sudionik projekta, inače <code>false</code>.
      */
-    public boolean hasMathCollaborator(MathClub mathClubToCheck){
+    public boolean hasMathClubCollaborator(MathClub mathClubToCheck){
         return collaborators.containsKey(mathClubToCheck);
     }
 

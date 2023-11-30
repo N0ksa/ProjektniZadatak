@@ -1,12 +1,13 @@
 package hr.java.project.entities;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Predstavlja profesora.
  */
 
-public class Professor extends NamedEntity {
+public class Professor extends NamedEntity implements Serializable {
     private String surname;
     private String email;
 

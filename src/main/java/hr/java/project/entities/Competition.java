@@ -1,22 +1,20 @@
 package hr.java.project.entities;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Predstavlja matematičko natjecanje.
  */
-public class Competition extends NamedEntity {
+public class Competition extends NamedEntity implements Serializable {
 
     private String description;
     private Address address;
     private Auditorium auditorium;
     private LocalDateTime timeOfCompetition;
-    private List <CompetitionResult> competitionResults;
+    private Set <CompetitionResult> competitionResults;
 
     /**
      * Konstruktor za stvaranje nove instance matematičkog natjecanja.
@@ -27,7 +25,7 @@ public class Competition extends NamedEntity {
      * @param competitionResults Rezultati natjecatelja.
      */
     public Competition(Long competitionId, String name, String description, Address address, Auditorium auditorium, LocalDateTime timeOfCompetition,
-                       List<CompetitionResult> competitionResults) {
+                       Set<CompetitionResult> competitionResults) {
         super(competitionId, name);
         this.description = description;
         this.address = address;
@@ -69,13 +67,13 @@ public class Competition extends NamedEntity {
         this.timeOfCompetition = timeOfCompetition;
     }
 
-    public List<CompetitionResult> getCompetitionResults() {
+    public Set<CompetitionResult> getCompetitionResults() {
         return competitionResults;
     }
 
 
 
-    public void setCompetitionResults(List<CompetitionResult> competitionResults) {
+    public void setCompetitionResults(Set<CompetitionResult> competitionResults) {
         this.competitionResults = competitionResults;
     }
 

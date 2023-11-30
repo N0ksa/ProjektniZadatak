@@ -21,8 +21,8 @@ public class Address implements Serializable {
      * @param houseNumber Kućni broj
      * @param city Grad
      */
-    private Address(Long  addressIdid, String street, String houseNumber, City city) {
-        this.addressId = addressIdid;
+    private Address(Long  addressId, String street, String houseNumber, City city) {
+        this.addressId = addressId;
         this.street = street;
         this.houseNumber = houseNumber;
         this.city = city;

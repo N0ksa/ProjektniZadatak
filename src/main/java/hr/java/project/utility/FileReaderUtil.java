@@ -181,7 +181,6 @@ public class FileReaderUtil {
 
     /**
      * Čita studentske matematičke klubove iz datoteke i vraća ih kao listu objekata klase MathClub.
-     *
      * @return Lista matematičkih klubova učitanih iz datoteke.
      */
 
@@ -246,19 +245,21 @@ public class FileReaderUtil {
                 String competitionDescription = reader.readLine();
 
                 Long addressId = Long.parseLong(reader.readLine());
-                Optional competitionAddress = addresses.stream()
+                Optional<Address> competitionAddress = addresses.stream()
                         .filter(address -> address.getAddressId().compareTo(addressId) == 0)
                         .findFirst();
 
                 LocalDateTime competitionTime = LocalDateTime.parse(reader.readLine(),
                         DateTimeFormatter.ofPattern(ValidationRegex.VALID_LOCAL_DATE_TIME_REGEX.getRegex()));
 
-                Record auditorium = new Auditorium(reader.readLine(), reader.readLine());
+                Auditorium auditorium = new Auditorium(reader.readLine(), reader.readLine());
 
-                List<String> competitionResultsString = Arrays.asList(reader.readLine().split(","));
+                List<String> competitionResultsString = Arrays.asList(reader.readLine().split(","))
+                        .stream().map(result -> result.trim()).collect(Collectors.toList());
+
                 Set<CompetitionResult> competitionResults = competitionResultsString.stream()
                         .map(competitionString ->{
-                            List<String> individualResults = Arrays.asList(competitionString.trim().split("-"));
+                            List<String> individualResults = Arrays.asList(competitionString.split("-"));
 
                             Long studentId = Long.parseLong(individualResults.get(0));
                             BigDecimal result = new BigDecimal(individualResults.get(1));
@@ -273,7 +274,13 @@ public class FileReaderUtil {
 
                 reader.readLine();
 
+                competitionAddress.ifPresent(address -> mathCompetitions.add(new Competition(competitionId, competitionName,
+                        competitionDescription, address, auditorium, competitionTime, competitionResults)));
+
+
             }
+
+
         }
         catch (IOException ex) {
             String message = "Dogodila se pogreška kod čitanja datoteke - + " + MATH_COMPETITIONS_FILE_NAME;
@@ -304,8 +311,8 @@ public class FileReaderUtil {
                             List <String> clubStudentString = Arrays.asList(collaborator.split("-"));
                             Long mathClubId = Long.parseLong(clubStudentString.get(0));
                             List <Long> studentsId = Arrays.stream(clubStudentString.get(1)
-                                    .trim()
                                     .split(","))
+                                    .map(studentString -> studentString.trim())
                                     .map(studentString -> Long.parseLong(studentString))
                                     .collect(Collectors.toList());
 
@@ -319,10 +326,13 @@ public class FileReaderUtil {
 
                             return Map.entry(mathClubOptional.get(), studentList);
 
+
                 })
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
                 reader.readLine();
+
+                mathProjects.add(new MathProject(projectId, projectName, projectDescription, collaborators));
 
             }
         }catch (IOException ex) {
@@ -339,7 +349,7 @@ public class FileReaderUtil {
      * Pronalazi studenta s određenim identifikacijskim brojem u zadanoj listi.
      * @param id Identifikacijski broj studenta kojeg treba pronaći.
      * @param students Lista studenata u kojoj treba tražiti.
-     * @return {@code Optional} koji sadrži pronađeni artikl ili prazan {@code Optional} ako artikl nije pronađen.
+     * @return {@code Optional} koji sadrži studenta ili prazan {@code Optional} ako student nije pronađen.
      */
     public static Optional<Student> findStudentById(Long id, List<Student> students){
         return students.stream()
@@ -347,6 +357,13 @@ public class FileReaderUtil {
                 .findFirst();
     }
 
+
+    /**
+     * Pronalazi matematički klub s određenim identifikacijskim brojem u zadanoj listi.
+     * @param id Identifikacijski broj matematički kluba kojeg treba pronaći.
+     * @param mathClubs Lista matematičkih klubova u kojoj treba tražiti.
+     * @return {@code Optional} koji sadrži matematički klub ili prazan {@code Optional} ako matematički klub nije pronađen.
+     */
     public static Optional<MathClub> findMathClubById(Long id, List<MathClub> mathClubs){
         return mathClubs.stream()
                 .filter(mathClub -> mathClub.getId().compareTo(id) == 0)

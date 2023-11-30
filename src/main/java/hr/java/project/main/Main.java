@@ -1,17 +1,13 @@
 package hr.java.project.main;
 
 import hr.java.project.entities.*;
-import hr.java.project.enums.MaxLimit;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import hr.java.project.exception.*;
 import hr.java.project.sort.StudentSorter;
 import hr.java.project.utility.FileReaderUtil;
-import hr.java.project.utility.SafeInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -172,7 +168,7 @@ public class Main {
     private static Integer countParticipationsInProjectsForMathClub(MathClub participant, List<MathProject> projects){
 
         long numberOfParticipations =  projects.stream()
-                .filter(mathProject -> mathProject.hasMathCollaborator(participant))
+                .filter(mathProject -> mathProject.hasMathClubCollaborator(participant))
                 .count();
 
         return (int) numberOfParticipations;

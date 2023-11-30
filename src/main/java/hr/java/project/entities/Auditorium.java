@@ -1,4 +1,6 @@
 package hr.java.project.entities;
 
-public record Auditorium(String name, String building) {
+import java.io.Serializable;
+
+public record Auditorium (String name, String building) implements Serializable{
 }

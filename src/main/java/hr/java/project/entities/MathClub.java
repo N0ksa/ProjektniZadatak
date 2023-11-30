@@ -1,5 +1,6 @@
 package hr.java.project.entities;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
@@ -9,7 +10,7 @@ import java.util.Set;
  * Predstavlja matematički klub.
  * Implementira sučelje {@link Gradable}, što znači da se može ocjenjivati.
  */
-public class MathClub extends NamedEntity implements Gradable {
+public class MathClub extends NamedEntity implements Gradable, Serializable {
     private Address address;
     private Set<Student> students;
 
