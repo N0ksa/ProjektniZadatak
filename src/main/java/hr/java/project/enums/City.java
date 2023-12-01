@@ -2,10 +2,12 @@ package hr.java.project.enums;
 
 import hr.java.project.exception.NoSuchCityException;
 
+import java.io.Serializable;
+
 /**
  *Predstavlja različite gradove u Hrvatskoj s njihovim odgovarajućim poštanskim brojevima.
  */
-public enum City {
+public enum City implements Serializable {
     ZAGREB("Zagreb", "10000"),
     SPLIT("Split", "21000"),
     RIJEKA("Rijeka", "51000"),

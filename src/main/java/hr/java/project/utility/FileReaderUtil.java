@@ -72,25 +72,21 @@ public class FileReaderUtil {
                     grades.put(subjects.get(i), studentGrades.get(i));
                 }
 
-                String isMember = reader.readLine();
+
                 String memberId;
                 LocalDate joinDate;
-                ClubMembership membership = null;
 
-                if (isMember.equalsIgnoreCase("member")) {
-                    memberId = reader.readLine();
-                    joinDate = LocalDate.parse(reader.readLine(),
-                            DateTimeFormatter.ofPattern(ValidationRegex.VALID_LOCAL_DATE_REGEX.getRegex()));
-                    membership = new ClubMembership(memberId, joinDate);
+                memberId = reader.readLine();
+                joinDate = LocalDate.parse(reader.readLine(),
+                        DateTimeFormatter.ofPattern(ValidationRegex.VALID_LOCAL_DATE_REGEX.getRegex()));
+                ClubMembership membership = new ClubMembership(memberId, joinDate);
 
-                    reader.readLine();
+                reader.readLine();
 
-                } else {
-                    reader.readLine();
-                }
+
 
                 students.add(new Student(studentName, studentSurname, studentId, studentWebAddress,
-                        studentYearOfStudy, grades, Optional.ofNullable(membership)));
+                        studentYearOfStudy, grades, membership));
 
             }
 

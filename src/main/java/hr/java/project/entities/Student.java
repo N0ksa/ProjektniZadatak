@@ -18,7 +18,7 @@ public class Student extends NamedEntity implements Gradable, Serializable {
     private Integer yearOfStudy;
     private Map<String, Integer> grades;
 
-    private Optional<ClubMembership> clubMembership;
+    private ClubMembership clubMembership;
 
 
     /**
@@ -31,7 +31,7 @@ public class Student extends NamedEntity implements Gradable, Serializable {
      * @param grades Mapa koja sadrži ocjene studenta.
      */
     public Student(String name, String surname, Long studentId, String email, Integer yearOfStudy, Map<String,
-            Integer> grades, Optional<ClubMembership> membership) {
+            Integer> grades, ClubMembership membership) {
 
         super(studentId, name);
         this.surname = surname;
@@ -74,12 +74,12 @@ public class Student extends NamedEntity implements Gradable, Serializable {
         this.grades = grades;
     }
 
-    public Optional <ClubMembership> getClubMembership() {
+    public ClubMembership getClubMembership() {
         return clubMembership;
     }
 
     public void setClubMembership(ClubMembership clubMembership) {
-        this.clubMembership = Optional.ofNullable(clubMembership);
+        this.clubMembership = clubMembership;
     }
 
 

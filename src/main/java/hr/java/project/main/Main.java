@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import hr.java.project.sort.StudentSorter;
 import hr.java.project.utility.FileReaderUtil;
+import hr.java.project.utility.SerializationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,11 @@ public class Main {
 
         sortStudentsBySurname(students);
 
+        SerializationUtil.serializeCompetitionResults(mathCompetitions);
+
+        List<Competition> competitionsAfterDeserialization = SerializationUtil.deserializeCompetitionResults();
+        competitionsAfterDeserialization.forEach(competition -> System.out.println(competition.getName()));
+
     }
 
     /**
@@ -65,8 +71,7 @@ public class Main {
     private static Optional <Student> findStudentWithLongestMembership(List<Student> students) {
 
         return students.stream()
-                .filter(student -> student.getClubMembership().isPresent())
-                .min(Comparator.comparing(student -> student.getClubMembership().get().getJoinDate()));
+                .min(Comparator.comparing(student -> student.getClubMembership().getJoinDate()));
     }
 
 

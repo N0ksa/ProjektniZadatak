@@ -4,7 +4,6 @@ Ivić
 www.ivic@tvz.hr
 2
 4,5,2,4,3,2,3,4,2,4,3,3,4,5,3,4,2
-Member
 453251
 01.10.2022.
 
@@ -14,7 +13,8 @@ Vlašić
 www.vblanka@pmf.hr
 1
 4,3,4,5,5,2,4,3
-Non-Member
+556434
+23.09.2021.
 
 Pero
 Perić
@@ -22,7 +22,6 @@ Perić
 www.pperic@fer.hr
 3
 2,2,3,2,2,3,2,3,4,2,4,2,5,2,3,3,2,4,3,2,2,4,5,4,3,2
-Member
 232342
 02.10.2021.
 
@@ -32,7 +31,6 @@ Marić
 www.mmaric@efos.hr
 1
 2,2,4,2,5,5,2,2
-Member
 573857
 28.10.2023.
 
@@ -42,7 +40,6 @@ Ivić
 www.iivic.tvz@hr
 3
 5,4,4,5,5,3,5,5,3,4,4,5,5,5,3,4,4,4,5,5,5,5,2,3,4,3
-Member
 231123
 10.10.2021.
 
@@ -52,7 +49,6 @@ Kovač
 ana.kovac@pmf.hr
 2
 4,3,2,4,5,3,4,5,3,4,5,4,3,2,4,3,5
-Member
 798525
 15.09.2022.
 
@@ -62,7 +58,8 @@ Horvat
 petar.horvat@fer.com
 1
 3,4,5,2,4,3,2,4
-Non-Member
+569001
+15.10.2023.
 
 Lucija
 Babić
@@ -70,7 +67,6 @@ Babić
 lucija.babic@efos.com
 3
 5,4,3,5,2,4,3,5,4,2,4,3,2,5,3,4,5,3,4,2,4,4,5,3,4,2
-Member
 651234
 02.08.2020.
 
@@ -80,7 +76,8 @@ Novak
 tomislav.novak@efos.com
 1
 4,5,2,4,3,3,2,4
-Non-Member
+501231
+10.09.2023.
 
 Martina
 Vuković
@@ -88,7 +85,6 @@ Vuković
 martina.vukovic@tvz.com
 3
 2,4,3,5,4,3,2,4,5,2,4,3,5,4,3,2,4,5,3,4,2,5,5,5,3,4
-Member
 905648
 08.01.2020.
 
@@ -98,7 +94,6 @@ Kralj
 luka.kralj@tvz.com
 2
 5,3,4,2,4,3,5,2,4,3,2,4,3,4,5,2,3
-Member
 470125
 11.11.2022.
 
@@ -108,7 +103,6 @@ Pavić
 elena.pavic@tvz.com
 2
 4,3,5,4,2,4,3,4,5,2,4,3,2,4,5,3,4
-Member
 863215
 07.06.2022.
 
@@ -118,7 +112,8 @@ Matić
 matija.matic@pmf.com
 1
 3,4,5,2,4,3,2,4
-Non-Member
+009101
+11.11.2023.
 
 Ivana
 Barišić
@@ -126,7 +121,6 @@ Barišić
 ivana.barisic@pmf.com
 3
 4,5,3,2,4,3,2,5,4,3,4,2,4,3,5,2,4,3,3,4,5,5,2,5,5,3
-Member
 582394
 23.02.2021.
 
@@ -136,7 +130,6 @@ Knežević
 leon.knezevic@efos.com
 1
 2,3,4,2,4,3,5,2
-Member
 231453
 05.10.2023.
 
@@ -146,7 +139,6 @@ Marić
 sara.maric@tvz.com
 3
 3,4,5,2,4,3,2,4,3,4,5,2,4,3,2,4,5,3,5,5,5,5,2,3,3,3
-Member
 714286
 14.01.2020.
 
@@ -156,7 +148,6 @@ Jurić
 filip.juric@pmf.com
 2
 4,5,3,2,4,3,4,5,2,4,3,2,4,3,5,2,4
-Member
 628541
 05.12.2021.
 
@@ -166,7 +157,8 @@ Kovačević
 ema.kovacevic@pmf.com
 1
 2,3,4,2,4,3,5,2
-Non-Member
+323430
+06.10.2023.
 
 Bruno
 Martinović
@@ -174,7 +166,6 @@ Martinović
 bruno.martinovic@pmf.com
 3
 4,5,2,4,3,3,2,4,5,3,4,2,4,3,4,5,2,3,4,2,5,5,5,3,5
-Member
 395678
 09.09.2022.
 
@@ -184,7 +175,6 @@ Ivana
 ivana.saric@tvz.com
 2
 5,3,4,2,4,3,5,2,4,3,2,4,3,4,5,2,3
-Member
 982134
 28.07.2023.
 
@@ -194,7 +184,8 @@ Burić
 antonio.buric@pmf.com
 1
 3,4,5,2,4,3,2,4
-Non-Member
+675456
+29.11.2023.
 
 Mia
 Petrović
@@ -202,7 +193,6 @@ Petrović
 mia.petrovic@fer.com
 3
 5,4,3,2,4,3,2,5,4,2,4,3,5,4,3,2,4,5,3,4,2,5,4,5,5,5
-Member
 546782
 16.04.2020.
 
